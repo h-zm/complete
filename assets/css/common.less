@@ -1,0 +1,30 @@
+.el-input {
+  width: fit-content;
+}
+
+// TODO: 覆盖 vbap/css/vbap.css中的样式
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px 0px 5px 10px 0px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 3px;
+  /*滚动条的背景区域的圆角*/
+  background: rgba(229, 233, 242, 1) !important;
+  /*滚动条的背景颜色*/
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 3px !important;
+  /*滚动条的圆角*/
+  -webkit-box-shadow: inset 0 0 6px 0px 5px 10px 0px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.1) !important;
+  /*滚动条的背景颜色*/
+  background: rgba(116, 138, 161, 1) !important;
+  visibility: initial !important;
+}

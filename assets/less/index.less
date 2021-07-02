@@ -1,0 +1,17 @@
+// 公用设置的less组件
+@zIndex: 1001; // zIndex基础值 header 组件以它为开始
+@color: #28292d;
+@basicBakc: #fff;
+@font14: 14px;
+
+.pointer(@type:pointer) {
+  cursor: @type;
+}
+
+.flex(@align:center,@justify:flex-start,@wrap:nowrap,@row:row) {
+  display: flex;
+  align-items: @align;
+  justify-content: @justify;
+  flex-wrap: @wrap;
+  flex-direction: @row;
+}

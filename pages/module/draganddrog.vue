@@ -15,7 +15,16 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      dataList: [
+        { name: "testA", id: 1 },
+        { name: "testB", id: 2 },
+        { name: "testC", id: 3 },
+        { name: "testD", id: 4 },
+        { name: "testE", id: 5 },
+        { name: "testE", id: 6 }
+      ]
+    };
   },
   mounted() {
     // 拖拽对象

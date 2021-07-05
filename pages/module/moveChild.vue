@@ -34,12 +34,26 @@ export default {
       dargElement: null
     };
   },
-  mounted() {},
+  mounted() {
+    let targeElement = document.getElementsByClassName("moving-area")[0];
+    // console.log("子节点名称", targeElement.classList);
+    // for (let i = 0; i < targeElement.childNodes.length; i++) {
+    //   console.log(`第${i + 1}个子节点`, targeElement.childNodes[i]);
+    // }
+    // let firstChild = targeElement.childNodes[0];
+    // 移出子节点
+    // targeElement.removeChild(firstChild);
+    // 在末尾插入字节节点
+    // targeElement.appendChild(firstChild)；、
+    //复制子节点
+    // targeElement.cloneNode(firstChild)
+    // 插入指定节点
+    // targeElement.insertBefore(新的子节点, 作为参考的子节点);
+  },
   methods: {
     // 移动对象 开始移动触发
     dragStart(item, index, e) {
       // 设置移动对象的id
-      this.dargElement = item;
       e.dataTransfer.setData("text/plain", item.name);
       console.log(`移动项目索引值是${index},内容是%o`, item);
     },
@@ -49,6 +63,7 @@ export default {
       e.preventDefault();
       let target = e.target;
       let { nodeName } = target; // 节点
+      this.dargElement = item;
       // console.log(e.y, e.x, `拖拉元素${item.name}y,x的坐标变化`);
       console.log(`移入`, target.id);
     },
@@ -112,7 +127,7 @@ export default {
       border: 1px solid #b1aeae;
       text-align: center;
       margin: 10px;
-      .pointer();
+      .pointer(move);
     }
   }
 }

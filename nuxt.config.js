@@ -34,6 +34,7 @@ export default {
   plugins: [
     "@/plugins/element-ui",
     "@/plugins/axios",
+    "@/plugins/cookies",
     "@/plugins/copy",
     "@/plugins/constructor",
     { src: "@/plugins/notification", mode: "client" }

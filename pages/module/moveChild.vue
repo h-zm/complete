@@ -10,9 +10,13 @@
             top: beginPosition.y + 'px',
             width: movingAttribute.width + 'px',
             height: movingAttribute.height + 'px',
-            marginTop: movingMagin.top + 'px',
-            marginLeft: movingMagin.left + 'px'
+            marginTop: movingMagrin.top + 'px',
+            marginLeft: movingMagrin.left + 'px'
           }"
+        ></div>
+        <div
+          class="begin-point"
+          :style="{ left: beginPosition.x + 'px', top: beginPosition.y + 'px' }"
         ></div>
       </div>
       <div
@@ -58,7 +62,7 @@ export default {
         height: 0
       },
       // 当移动的是负值是起作用
-      movingMagin: {
+      movingMagrin: {
         top: 0,
         left: 0
       }
@@ -96,6 +100,13 @@ export default {
     document
       .getElementById("moving")
       .addEventListener("mouseleave", this.mousemoveLeave);
+  },
+  watch: {
+    "beginPosition.x": {
+      handler(value) {
+        console.log(value, "起始点的横坐标有变化吗?");
+      }
+    }
   },
   methods: {
     // 移动对象 开始移动触发
@@ -167,33 +178,38 @@ export default {
     mousemoveFunc(e) {
       // '鼠标移动事件'
       if (this.beginMouse) {
-        console.log(e, "移动点位");
+        // console.log(e, "移动点位");
         // 通过起始位置 与 移动点位置判断当前框选
         // 如果是往上，往左及是向坐标的负方向需要通过margin来更新
-
-        // 一开始往左移动
         if (this.beginPosition.x > e.offsetX) {
-          this.movingMagin.left += e.movementX;
+          console.log(e, "移动点位");
+          this.movingMagrin.left += e.movementX;
+          console.log(e.offsetX, "当前移动点的横坐标小于起始点的位置");
+        } else {
+          // this.movingMagrin.left = 0;
+          // console.log(e.offsetX, "当前移动点与起始点的X坐标关系");
         }
-        // 一开始往上移动
         if (this.beginPosition.y > e.offsetY) {
-          this.movingMagin.top += e.movementY;
+          this.movingMagrin.top += e.movementY;
+        } else {
+          // this.movingMagrin.top = 0;
         }
 
         // 存在移动中向反方向移动的情况
         // 所以在这里判断当前的宽度是否有
         // 大于0 直接复制 不存在的通过绝对值赋值
-        if (this.movingMagin.left == 0) {
-          this.movingAttribute.width += e.movementX;
-        } else {
+        if (this.movingMagrin.left < 0 && e.movementX < 0) {
           this.movingAttribute.width += Math.abs(e.movementX);
+          // console.log(e, "测试,宽度如何变化");
+        } else {
+          this.movingAttribute.width += e.movementX;
         }
 
         // 同上
-        if (this.movingMagin.top == 0) {
-          this.movingAttribute.height += e.movementY;
-        } else {
+        if (this.movingMagrin.top < 0 && e.movementY < 0) {
           this.movingAttribute.height += Math.abs(e.movementY);
+        } else {
+          this.movingAttribute.height += e.movementY;
         }
       }
     },
@@ -209,7 +225,7 @@ export default {
       // '鼠标移出事件'
       if (this.beginMouse) {
         this.resetMoving();
-        console.log(e, this.beginMouse, "moveOut松开鼠标");
+        console.log(e, this.beginMouse, "moveleave鼠标移出");
       }
     },
 
@@ -217,21 +233,21 @@ export default {
     resetMoving() {
       this.beginMouse = false;
       // 起始位置
-      this.beginPosition = {
-        x: 0,
-        y: 0
-      };
-      // 移动中宽度与高度的变化
-      this.movingAttribute = {
-        width: 0,
-        height: 0
-      };
+      // this.beginPosition = {
+      //   x: 0,
+      //   y: 0
+      // };
+      // // 移动中宽度与高度的变化
+      // this.movingAttribute = {
+      //   width: 0,
+      //   height: 0
+      // };
 
-      // 重置margin
-      this.movingMagin = {
-        top: 0,
-        left: 0
-      };
+      // // 重置margin
+      // this.movingMagrin = {
+      //   top: 0,
+      //   left: 0
+      // };
     }
   }
 };
@@ -265,6 +281,16 @@ export default {
       top: 0;
       left: 0;
       z-index: @zIndex + 2;
+    }
+
+    .begin-point {
+      width: 4px;
+      height: 4px;
+      position: absolute;
+      background: rgba(9, 60, 212, 1);
+      top: 0;
+      left: 0;
+      z-index: @zIndex + 3;
     }
 
     &-item {

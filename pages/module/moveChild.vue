@@ -1,26 +1,10 @@
 <template>
-  <!-- 新建文件的模板 -->
+  <!-- 拖拽功能 -->
   <div class="example">
     <div class="moving-area" @dragleave="dragLeave">
-      <div class="moving-fix" id="moving">
-        <div
-          class="moving-block"
-          :style="{
-            left: beginPosition.x + 'px',
-            top: beginPosition.y + 'px',
-            width: movingAttribute.width + 'px',
-            height: movingAttribute.height + 'px',
-            marginTop: movingMagrin.top + 'px',
-            marginLeft: movingMagrin.left + 'px'
-          }"
-        ></div>
-        <div
-          class="begin-point"
-          :style="{ left: beginPosition.x + 'px', top: beginPosition.y + 'px' }"
-        ></div>
-      </div>
       <div
         class="moving-area-item"
+        :class="{ 'choose-style': item.choose }"
         :id="item.name"
         v-for="(item, index) in dataList"
         :key="index"
@@ -38,76 +22,26 @@
 
 <script>
 export default {
+  head() {
+    return {
+      title: "移动"
+    };
+  },
   data() {
     return {
       dataList: [
-        { name: "testA", id: 1 },
-        { name: "testB", id: 2 },
-        { name: "testC", id: 3 },
-        { name: "testD", id: 4 },
-        { name: "testE", id: 5 },
-        { name: "testF", id: 6 }
+        { name: "testA", id: 1, choose: false },
+        { name: "testB", id: 2, choose: false },
+        { name: "testC", id: 3, choose: false },
+        { name: "testD", id: 4, choose: false },
+        { name: "testE", id: 5, choose: false },
+        { name: "testF", id: 6, choose: false }
       ],
-      dargElement: null,
-      beginMouse: false, // 开始鼠标监听
-
-      // 起始位置
-      beginPosition: {
-        x: 0,
-        y: 0
-      },
-      // 移动中宽度与高度的变化
-      movingAttribute: {
-        width: 0,
-        height: 0
-      },
-      // 当移动的是负值是起作用
-      movingMagrin: {
-        top: 0,
-        left: 0
-      }
+      dargElement: null
     };
   },
-  mounted() {
-    // let targeElement = document.getElementsByClassName("moving-area")[0];
-    // console.log("子节点名称", targeElement.classList);
-    // for (let i = 0; i < targeElement.childNodes.length; i++) {
-    //   console.log(`第${i + 1}个子节点`, targeElement.childNodes[i]);
-    // }
-    // let firstChild = targeElement.childNodes[0];
-    // 移出子节点
-    // targeElement.removeChild(firstChild);
-    // 在末尾插入字节节点
-    // targeElement.appendChild(firstChild)；、
-    //复制子节点
-    // targeElement.cloneNode(firstChild)
-    // 插入指定节点
-    // targeElement.insertBefore(新的子节点, 作为参考的子节点);
-    // 鼠标按下
-    document
-      .getElementById("moving")
-      .addEventListener("mousedown", this.mousemoveDown);
-    //添加鼠标移动监听
-    document
-      .getElementById("moving")
-      .addEventListener("mousemove", this.mousemoveFunc);
-    // 鼠标松开
-    document
-      .getElementById("moving")
-      .addEventListener("mouseup", this.mousemoveUp);
-
-    // 鼠标移出
-    document
-      .getElementById("moving")
-      .addEventListener("mouseleave", this.mousemoveLeave);
-  },
-  watch: {
-    "beginPosition.x": {
-      handler(value) {
-        console.log(value, "起始点的横坐标有变化吗?");
-      }
-    }
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
     // 移动对象 开始移动触发
     dragStart(item, index, e) {
@@ -149,10 +83,14 @@ export default {
       // 到达元素
       let toElement = document.getElementById(e.target.id);
       // 起始元素
+      // 通过 dataTransfer 拿到脱拽过程中传递的参数
       let fromElement = document.getElementById(
         e.dataTransfer.getData("text/plain")
       );
 
+      // 这里是通过交换节点的内容实现的更换位置
+      // 此外 还可以通过节点本省的位置交换实现
+      // childNode 的 add,remove等操作
       temp = fromElement.innerHTML;
       console.log(temp, "temp");
       // toElement.innerHTML =  this.dargElement.name
@@ -162,92 +100,6 @@ export default {
       console.log(this.dataList, "数据结构有变化吗?");
 
       // console.log(toElement, "结束时的对象");
-    },
-
-    mousemoveDown(e) {
-      // '鼠标按下事件'
-      this.beginMouse = true;
-      console.log(e, "按下点的数据");
-      // 根据起始点 更新位置
-      this.beginPosition = {
-        x: e.offsetX,
-        y: e.offsetY
-      };
-      console.log(this.beginPosition, "按下鼠标");
-    },
-    mousemoveFunc(e) {
-      // '鼠标移动事件'
-      if (this.beginMouse) {
-        // console.log(e, "移动点位");
-        // 通过起始位置 与 移动点位置判断当前框选
-        // 如果是往上，往左及是向坐标的负方向需要通过margin来更新
-        if (this.beginPosition.x > e.offsetX) {
-          console.log(e, "移动点位");
-          this.movingMagrin.left += e.movementX;
-          console.log(e.offsetX, "当前移动点的横坐标小于起始点的位置");
-        } else {
-          // this.movingMagrin.left = 0;
-          // console.log(e.offsetX, "当前移动点与起始点的X坐标关系");
-        }
-        if (this.beginPosition.y > e.offsetY) {
-          this.movingMagrin.top += e.movementY;
-        } else {
-          // this.movingMagrin.top = 0;
-        }
-
-        // 存在移动中向反方向移动的情况
-        // 所以在这里判断当前的宽度是否有
-        // 大于0 直接复制 不存在的通过绝对值赋值
-        if (this.movingMagrin.left < 0 && e.movementX < 0) {
-          this.movingAttribute.width += Math.abs(e.movementX);
-          // console.log(e, "测试,宽度如何变化");
-        } else {
-          this.movingAttribute.width += e.movementX;
-        }
-
-        // 同上
-        if (this.movingMagrin.top < 0 && e.movementY < 0) {
-          this.movingAttribute.height += Math.abs(e.movementY);
-        } else {
-          this.movingAttribute.height += e.movementY;
-        }
-      }
-    },
-    mousemoveUp(e) {
-      // '鼠标松开事件'
-      if (this.beginMouse) {
-        this.resetMoving();
-        console.log(e, this.beginMouse, "moveUp松开鼠标");
-      }
-    },
-
-    mousemoveLeave(e) {
-      // '鼠标移出事件'
-      if (this.beginMouse) {
-        this.resetMoving();
-        console.log(e, this.beginMouse, "moveleave鼠标移出");
-      }
-    },
-
-    // 重置移动数据
-    resetMoving() {
-      this.beginMouse = false;
-      // 起始位置
-      // this.beginPosition = {
-      //   x: 0,
-      //   y: 0
-      // };
-      // // 移动中宽度与高度的变化
-      // this.movingAttribute = {
-      //   width: 0,
-      //   height: 0
-      // };
-
-      // // 重置margin
-      // this.movingMagrin = {
-      //   top: 0,
-      //   left: 0
-      // };
     }
   }
 };
@@ -266,7 +118,7 @@ export default {
     .moving-fix {
       width: 100%;
       height: 100%;
-      position: absolute;
+      position: fixed;
       background: rgba(0, 0, 0, 0.02);
       top: 0;
       left: 0;
@@ -276,7 +128,7 @@ export default {
     .moving-block {
       width: 0;
       height: 0;
-      position: absolute;
+      position: fixed;
       background: rgba(130, 157, 238, 0.1);
       top: 0;
       left: 0;
@@ -286,11 +138,21 @@ export default {
     .begin-point {
       width: 4px;
       height: 4px;
-      position: absolute;
+      position: fixed;
       background: rgba(9, 60, 212, 1);
       top: 0;
       left: 0;
       z-index: @zIndex + 3;
+    }
+
+    .moving-point {
+      width: 4px;
+      height: 4px;
+      position: fixed;
+      background: rgb(236, 13, 13);
+      top: 0;
+      left: 0;
+      z-index: @zIndex + 4;
     }
 
     &-item {
@@ -303,6 +165,11 @@ export default {
       text-align: center;
       margin: 10px;
       .pointer(move);
+    }
+
+    .choose-style {
+      color: #fff;
+      background: #4090f7;
     }
   }
 }

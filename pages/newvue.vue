@@ -1,6 +1,8 @@
 <template>
   <!-- 新建文件的模板 -->
-  <div class="example"></div>
+  <div class="example">
+    模板
+  </div>
 </template>
 
 <script>
@@ -16,6 +18,5 @@ export default {
 <style lang="less">
 @import "~assets/less/index.less";
 .example {
-  
 }
 </style>

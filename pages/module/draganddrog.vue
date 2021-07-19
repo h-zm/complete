@@ -14,6 +14,11 @@
 
 <script>
 export default {
+  head() {
+    return {
+      title: "拖入目标区"
+    };
+  },
   data() {
     return {
       dataList: [

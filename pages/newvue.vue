@@ -7,6 +7,13 @@
 
 <script>
 export default {
+  head() {
+    return {
+      title: "改变宽度",
+      meta: "",
+      script: []
+    };
+  },
   data() {
     return {};
   },

@@ -42,6 +42,7 @@ export default {
           reject(hadn);
         }
       });
+      // Promise对象 可以通过.then 或者 async/await 解开
       prom
         .then(res => {
           console.log(res);

@@ -49,15 +49,13 @@ export default {
             menuRoute: [] // 目录数据
         };
     },
-    asyncData(context) {
+    asyncData({ app: { router } }) {
         // console.log("上下文对象:%o", ctx);
         return {
-            context
-            // rootInfo: app
+            rootInfo: router
         };
     },
     mounted() {
-        // console.log("上下文对象:%o", this.context);
         this.initRoute(); // 处理目录数据
         // inject $ 挂载查询
         // console.log(this.$info.searchInfo("name"), "信息");
@@ -70,8 +68,17 @@ export default {
 
         async initRoute() {
             // 获取整个项目目录
-            this.rootInfo = this.context.app.router.options.routes;
+            // this.rootInfo = this.context.app.router.options.routes;
             console.log("项目目录", this.rootInfo);
+            let tempList = Array.isArray(this.rootInfo.options.routes);
+            let _resetFunc = (route, index = 0, parent = {}) => {
+                let hasTimes = route.split("/").length; // 根据 / 判断目录所在的等级
+                if (hasTimes > 1) {
+                    // 二三级目录
+                } else {
+                    // 一级目录
+                }
+            };
         }
     }
 };

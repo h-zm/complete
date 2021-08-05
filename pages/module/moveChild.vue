@@ -1,6 +1,10 @@
 <template>
     <!-- 拖拽功能 -->
     <div class="example">
+        <ContentTip
+            >通过拖拽 <color-font>drag</color-font> 事件
+            实现元素间位置交换</ContentTip
+        >
         <div class="moving-area" @dragleave="dragLeave">
             <div
                 class="moving-area-item"
@@ -21,7 +25,9 @@
 </template>
 
 <script>
+import ColorFont from "../../components/ColorFont.vue";
 export default {
+    components: { ColorFont },
     head() {
         return {
             title: "移动元素"

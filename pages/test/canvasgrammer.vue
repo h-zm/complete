@@ -2,7 +2,9 @@
     <div>
         <!-- 模拟使用canvas标签 可参考 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API -->
         <div>
-            <h4>1.使用canvas画矩形</h4>
+            <content-tip>
+                1.使用canvas画矩形
+            </content-tip>
             <canvas id="firstCanvas"></canvas>
         </div>
         <div>
@@ -31,7 +33,11 @@
 </template>
 
 <script>
+import ContentTip from "~/components/ContentTip";
 export default {
+    components: {
+        ContentTip
+    },
     data() {
         return {};
     },

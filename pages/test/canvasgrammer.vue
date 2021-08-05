@@ -33,11 +33,7 @@
 </template>
 
 <script>
-import ContentTip from "~/components/ContentTip";
 export default {
-    components: {
-        ContentTip
-    },
     data() {
         return {};
     },

@@ -25,7 +25,11 @@
                 >
                     GitHub
                 </a>
-                <el-popover placement="bottom-start" trigger="hover">
+                <el-popover
+                    placement="top-start"
+                    trigger="hover"
+                    :close-delay="600"
+                >
                     <div class="menu-area">
                         <div
                             class="menu-area_item"
@@ -104,6 +108,23 @@ export default {
             this.$router.push(item.path);
         },
 
+        // 鼠标移入
+        bindMouseUp(menu) {
+            // console.log(menu.name, "鼠标移入");
+            this.menuTree.forEach(treeItem => {
+                // 针对2级及2级之后的类型进行判断
+                if (
+                    treeItem.parentId == menu.name ||
+                    (treeItem.indexName &&
+                        treeItem.indexName.includes(menu.parentId))
+                ) {
+                    treeItem.show = true;
+                } else if (treeItem.rank > 1) {
+                    treeItem.show = false;
+                }
+            });
+        },
+
         async initRoute() {
             // 通过this实例获取整个项目可跳转的目录信息
             this.rootInfo = this.$router.options.routes;
@@ -122,7 +143,7 @@ export default {
                 // 无限只是视觉效果
                 this.menuTree = [];
                 this._initTree(this.menuRoute);
-                // console.log(this.menuTree, "树结构");
+                console.log(this.menuTree, "树结构");
             });
         },
 
@@ -132,6 +153,7 @@ export default {
             if (route?.levelInfo) {
                 // console.log("一级以上层级传进来的信息:%o", route);
                 // 根据 - 个数判断目录等级 1个就是1级目录 俩个是二级目录 以此类推
+                //  利用for循环进行遍历
                 let childrenList = route.levelInfo.split("-");
                 for (let i = 0; i < childrenList.length; i++) {
                     // 设置基本信息
@@ -144,7 +166,7 @@ export default {
                     if (i > 0) {
                         currentInfo.parentId = childrenList[i - 1];
                         currentInfo.indexName = childrenList
-                            .slice(0, i + 1)
+                            .slice(0, i)
                             .join("-");
                     }
 
@@ -167,6 +189,8 @@ export default {
                 );
 
                 // console.log("搜寻值", route.indexName || route.name);
+                // 下面的判断应该可以和setPlaceOfMenu 方法再精简些
+                // 后续更新
 
                 // 没有查到的就推入首级信息
                 if (!searchResults) {
@@ -180,7 +204,8 @@ export default {
                                     id: route.name,
                                     path: route.path,
                                     name: route.name,
-                                    rank: index + 1
+                                    parentId: route.name,
+                                    rank: 2
                                 }
                             ]
                         });
@@ -258,16 +283,26 @@ export default {
         // 将 menuRoute 转化成数组件
         _initTree(list = [], parent = {}) {
             list.forEach(item => {
+                // 新复制一个变量进行操作
                 let infoItem = item;
-                infoItem.show = false;
+                // 为第一层级的路由添加一个该级的总开关
                 if (infoItem.rank == 1) {
-                    // 展示全部的
                     infoItem.showAll = false;
+                } else {
+                    // 为非1级添加show开关
+                    infoItem.show = false;
                 }
+                // 有子级的添加子级开关
+                if (infoItem?.list?.length) {
+                    infoItem.showChild = false;
+                    infoItem.showArrs = [];
+                }
+                // 将赋值结果输入menuTree中
                 this.menuTree.push({
                     ...infoItem
                 });
-                if (item?.list?.length) {
+                // 有子级的继续遍历子级
+                if (infoItem?.list?.length) {
                     this._initTree(item.list, item);
                 }
             });
@@ -317,9 +352,11 @@ export default {
 
 .menu-area {
     font-size: 16px;
+    transition: 0.3s height ease-in;
     &_item {
         line-height: 32px;
         .pointer();
+        transition: 0.3s all ease-in;
     }
     &_item:hover {
         .hover-style(#00c58e, #fff);
@@ -327,6 +364,12 @@ export default {
 
     &_noList {
         color: #35495e !important;
+    }
+
+    &_hide {
+        padding: 0;
+        height: 0;
+        overflow: hidden;
     }
 }
 </style>

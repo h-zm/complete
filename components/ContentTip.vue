@@ -41,5 +41,6 @@ export default {
     border-radius: 6px;
     overflow-x: auto;
     padding: 4px 6px;
+    margin-bottom: 12px;
 }
 </style>

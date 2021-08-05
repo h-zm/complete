@@ -1,12 +1,21 @@
 <template>
     <div class="change">
-        <h4>更换宽度</h4>
+        <ContentTip
+            >1.鼠标移动下方淡蓝色矩形右边框，会出现移动手标，按住并拖动右边框可以改矩形宽度</ContentTip
+        >
         <div class="test-area" @dragend="handleEnd">
+            <!-- 实际矩形 -->
             <div
                 class="test-area-left"
                 :style="{ width: leftInfo.width + 'px' }"
-            ></div>
+            >
+                实现原理：通过 drag 方法。首先赋予拖动元素可拖动属性， 即
+                draggable = 'true', 其次在可拖动属性上添加 drag、dragover 事件
+                (html文件中为 ondrag、ondragover)，再可拖动元素的父级添加
+                dragend 事件，讲拖动距离变化表现在矩形宽度上。
+            </div>
 
+            <!-- 建造div标签 模拟矩形的右边框 -->
             <div
                 class="test-area-line"
                 draggable="true"
@@ -30,7 +39,7 @@ export default {
     data() {
         return {
             leftInfo: {
-                width: 500
+                width: 360
             }
         };
     },
@@ -76,9 +85,12 @@ export default {
     height: 600px;
     &-left {
         background: #e2e9f3;
+        padding: 12px;
+        overflow-y: auto;
     }
     &-line {
         width: 5px;
+        margin-left: -2px;
         height: 100%;
         // background: #b9c8d6;
         .pointer(col-resize);

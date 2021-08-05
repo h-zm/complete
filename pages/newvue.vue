@@ -9,9 +9,10 @@
 export default {
     head() {
         return {
-            title: "改变宽度",
+            title: "vue文件模板",
             meta: "",
-            name: "文件模板",
+            description: "可用复制来快速创建文件",
+            name: "模板",
             script: []
         };
     },

@@ -1,5 +1,35 @@
 <template>
     <div class="header">
+        <el-popover placement="bottom-start" trigger="hover" :close-delay="600">
+            <div class="menu-area">
+                <div
+                    class="menu-area_item"
+                    :class="{
+                        'menu-area_noList': menu.list && menu.list.length,
+                        'menu-area_hide': menu.show == false
+                    }"
+                    :style="{
+                        'padding-left': 22 * (menu.rank - 1) + 'px'
+                    }"
+                    v-for="(menu, index) in menuTree"
+                    :key="index"
+                    @click="clickMenu(menu)"
+                    @mouseenter="bindMouseEnter(menu)"
+                >
+                    <i
+                        v-if="menu.list && menu.list.length"
+                        class="el-icon-arrow-down"
+                    ></i>
+                    <span>{{ menu.name }}</span>
+                </div>
+            </div>
+
+            <div class="header-menu" slot="reference">
+                <i class="el-icon-menu" slot="reference" title="菜单"></i>
+                <samp>menu</samp>
+            </div>
+        </el-popover>
+
         <var>header of complete</var>
         <i class="el-icon-s-home" @click="backHome()" title="到首页"></i>
         <!--
@@ -24,11 +54,58 @@
 </template>
 
 <script>
+import { initRoute } from "~/plugins/handleroute";
 export default {
+    data() {
+        return {
+            rootInfo: [], // 根路径
+            menuRoute: [], // 处理好的路由列表
+            menuTree: [] // 处理好的路由树
+        };
+    },
+    mounted() {
+        this.getRoutes();
+    },
     methods: {
         // 返回首页
         backHome() {
             location.href = "/";
+        },
+
+        // 获取 routes 数据
+        async getRoutes() {
+            // 通过this实例获取整个项目可跳转的目录信息
+            let options = this.$router.options;
+            this.menuTree = await initRoute(options, 2);
+        },
+
+        // 路由点击事件
+        clickMenu(item) {
+            // console.log(item, "点击的路径信息");
+            if (item.list && item.list.length) {
+                console.log("点击父级不跳转");
+                return;
+            }
+            this.$router.push(item.path);
+        },
+
+        // 鼠标移入
+        bindMouseEnter(menu) {
+            this.menuTree.forEach(treeItem => {
+                // 子级 父id 等于鼠标移入项的 显示
+                // 鼠标移入项目包含遍历数据indexName的也显示
+                if (
+                    treeItem.parentId == menu.name ||
+                    (treeItem.indexName &&
+                        menu.indexName &&
+                        menu.indexName.includes(treeItem.indexName))
+                ) {
+                    treeItem.show = true;
+                } else if (treeItem.rank > 1) {
+                    // 其余除了一级菜单都隐藏
+                    treeItem.show = false;
+                }
+            });
         }
     }
 };
@@ -39,7 +116,7 @@ export default {
 .header {
     width: 100%;
     height: 80px;
-    line-height: 80px;
+    // line-height: 80px;
     border-bottom: 1px solid #f4f4f4;
     border-radius: 0 0 4px 4px;
     background: #fff;
@@ -49,9 +126,53 @@ export default {
     left: 0;
     z-index: @zIndex;
     text-align: center;
+    .flex(center, center);
 
     .el-icon-s-home {
         .pointer();
+    }
+
+    &-menu {
+        position: absolute;
+        left: 10px;
+        margin: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: inherit;
+        background: #fff;
+        padding: 0 30px;
+        .pointer();
+    }
+
+    .el-icon-menu {
+        transform: scale(1.4);
+    }
+
+    .el-icon-s-home {
+        padding: 0 2px;
+    }
+}
+
+.menu-area {
+    font-size: 16px;
+    transition: 0.3s height ease-in;
+    &_item {
+        line-height: 32px;
+        .pointer();
+        transition: 0.3s all ease-in;
+    }
+    &_item:hover {
+        .hover-style(#00c58e, #fff);
+    }
+
+    &_noList {
+        color: #35495e !important;
+    }
+
+    &_hide {
+        padding: 0;
+        height: 0;
+        overflow: hidden;
     }
 }
 </style>

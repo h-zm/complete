@@ -1,5 +1,7 @@
 <template>
-    <div></div>
+    <div>
+        <contents>windows中visibilitychange属性标识网页是否在展示中</contents>
+    </div>
 </template>
 <script lang="ts">
 export default {

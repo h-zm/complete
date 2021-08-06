@@ -1,6 +1,7 @@
 <template>
     <!-- 框选功能 -->
     <div class="example">
+        <contents>范围筛选功能</contents>
         <div class="moving-area">
             <div
                 class="select-area"
@@ -152,7 +153,9 @@ import {
     aWeekSchedule,
     hourList
 } from "~/plugins/selectData";
+import Contents from "../../components/Font/Contents.vue";
 export default {
+    components: { Contents },
     head() {
         return {
             title: "时间范围筛选"

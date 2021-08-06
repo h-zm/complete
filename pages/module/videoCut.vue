@@ -1,7 +1,9 @@
 <template>
     <!-- 视频截取第一帧 -->
     <div>
-        <ContentTip>通过缓存视频截取视频第一帧作为封面等</ContentTip>
+        <Contents>
+            通过缓存视频截取视频第一帧作为封面等
+        </Contents>
         <input
             type="file"
             id="input"
@@ -177,7 +179,7 @@ export default {
 
                 // blob转文件信息
                 resultData.lastModifiedDate = new Date();
-                resultData.name = "首帧西悉尼";
+                resultData.name = "视频首帧";
                 this.fileInfo = resultData;
                 console.log(resultData, "文件信息");
                 //  var targetA = document.createElement("a");

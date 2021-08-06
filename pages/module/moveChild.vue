@@ -1,10 +1,13 @@
 <template>
     <!-- 拖拽功能 -->
     <div class="example">
-        <ContentTip
-            >通过拖拽 <color-font>drag</color-font> 事件
-            实现元素间位置交换</ContentTip
-        >
+        <Contents>
+            通过拖拽 <Colors>drag</Colors> 事件 实现元素间位置交换。 <br />
+            1. 给可拖动元素都添加 <Colors>draggable</Colors> 属性并设置为true。
+            <br />2. 通过<Colors>dragstart</Colors>事件得到拖动元素信息。<br />
+            3.使用<Colors>dragover</Colors>拖动移入事件获取等待交换的元素内容。<br />
+            4.drop停止时事件交换起始拖动元素与等待交换元素的节点内容，完成交换。
+        </Contents>
         <div class="moving-area" @dragleave="dragLeave">
             <div
                 class="moving-area-item"
@@ -25,9 +28,9 @@
 </template>
 
 <script>
-import ColorFont from "../../components/ColorFont.vue";
+import Colors from "../../components/Font/Colors.vue";
 export default {
-    components: { ColorFont },
+    components: { Colors },
     head() {
         return {
             title: "移动元素"

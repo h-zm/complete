@@ -26,4 +26,20 @@
     background-color: @bColor;
 }
 
+.none-style {
+    display: none;
+}
+
+.transition(@time:.3s,@transStyle:all,@transType:ease-in){
+    transition: @time @transStyle @transType;
+}
+
+.hide-element {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
 

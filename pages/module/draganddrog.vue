@@ -2,9 +2,9 @@
     <!-- 模拟拖拽 -->
     <div class="example">
         <!-- 设置draggable属性为true 使得元素可以拖拉-->
-        <ContentTip>
+        <Contents>
             <p>
-                1.给予拖动元素<color-font>draggable</color-font>属性且为true
+                1.给予拖动元素<Colors>draggable</Colors>属性且为true
                 使得元素可以拖拉。
             </p>
             <p>
@@ -20,7 +20,7 @@
                 为触发条件，JS控制 接收区域classList的变化 add (增加样式)
                 ,remove(移出样式) ，从而更新视觉效果
             </p>
-        </ContentTip>
+        </Contents>
         <el-button @click="resetFunc()"> reset </el-button>
         <div class="doing-area">
             <div class="drag-el">
@@ -37,9 +37,7 @@
 </template>
 
 <script>
-import ColorFont from "../../components/ColorFont.vue";
 export default {
-    components: { ColorFont },
     head() {
         return {
             title: "拖入目标区"

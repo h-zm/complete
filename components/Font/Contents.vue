@@ -1,6 +1,6 @@
 <template>
     <!-- 新建文件的模板 -->
-    <div class="tip-area">
+    <div class="tip-area" :style="[defineStyle]">
         <!-- :variable="variable" 方式将组件变量内容挂载到调用页面 -->
         <!-- 页面通过 template + slot-scope 组合形成作用域使用
                 <template slot-scope="scope">
@@ -15,11 +15,20 @@
 export default {
     head() {
         return {
-            title: "内容提示组件",
+            title: "内容样式组件",
             meta: "",
-            description: "可用复制来快速创建文件",
+            description: "",
             script: []
         };
+    },
+    props: {
+        // 自定义的样式组件
+        defineStyle: {
+            type: Object,
+            default: () => {
+                return {};
+            }
+        }
     },
     data() {
         return {

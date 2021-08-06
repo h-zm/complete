@@ -1,6 +1,11 @@
 <template>
     <div class="header">
-        <el-popover placement="bottom-start" trigger="hover" :close-delay="600">
+        <el-popover
+            v-model="showMenu"
+            placement="bottom-start"
+            trigger="hover"
+            :close-delay="600"
+        >
             <div class="menu-area">
                 <div
                     class="menu-area_item"
@@ -26,7 +31,7 @@
 
             <div class="header-menu" slot="reference">
                 <i class="el-icon-menu" slot="reference" title="菜单"></i>
-                <samp>menu</samp>
+                menu
             </div>
         </el-popover>
 
@@ -58,8 +63,7 @@ import { initRoute } from "~/plugins/handleroute";
 export default {
     data() {
         return {
-            rootInfo: [], // 根路径
-            menuRoute: [], // 处理好的路由列表
+            showMenu: false, // 菜单展示控件
             menuTree: [] // 处理好的路由树
         };
     },
@@ -86,6 +90,7 @@ export default {
                 console.log("点击父级不跳转");
                 return;
             }
+            this.showMenu = false;
             this.$router.push(item.path);
         },
 

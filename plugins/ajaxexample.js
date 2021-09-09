@@ -5,7 +5,7 @@ console.log("123");
 //   // XMLHttpRequest 是 AJAX 的基础  先创建一个实例
 //   var xhm = new XMLHttpRequest();
 //   // 发出请求 url请求地址 method 请求方式 async是否异步的布尔形参
-//   xhm.open(url, method, async);
+//   xhm.open(method,url, async);
 //   // 通过 onreadystatechange 方法监听 xhm中readyState的变化
 //   // readyState
 //   // 0: 请求未初始化

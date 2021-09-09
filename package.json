@@ -5,25 +5,27 @@
   "author": "hzm",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
-    "build": "nuxt build",
+    "dev": "cross-env NODE_ENV=dev PATH_ENV=dev nuxt",
+    "test": "cross-env NODE_ENV=test PATH_ENV=test nuxt",
+    "build": "cross-env NODE_ENV=pro PATH_ENV=pro nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.9.5",
     "axios": "^0.21.0",
+    "cross-env": "^7.0.3",
     "element-ui": "^2.4.11",
     "js-cookie": "^2.2.1",
-    "nuxt": "^2.0.0",
-    "qs": "^6.9.4",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "nuxt": "^2.0.0",
+    "qs": "^6.9.4",
     "vue-notification": "^1.3.20"
   },
   "devDependencies": {
     "@nuxtjs/proxy": "^2.1.0",
-    "koa": "^2.11.0",
+    "koa": "^2.13.1",
     "koa-body": "^4.1.1",
     "koa-router": "^7.4.0"
   }

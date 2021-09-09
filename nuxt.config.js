@@ -1,9 +1,10 @@
 import { fanyiUrl, baseUrl, youdaoUrl } from "./config/index";
 import path from "path";
 import fs from "fs";
+import setenv from "./setenv"; // 环境配置文件
 export default {
     // 在 nuxt.config.js 中配置你想引用的资源文件
-    mode: "universal",
+    // mode: "universal",
     /*
      ** Headers of the page
      */
@@ -34,6 +35,10 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
+    env: {
+        baseUrl: setenv[process.env.NODE_ENV].baseUrl,
+        baseUrl: setenv[process.env.NODE_ENV].baseUrl
+    },
     plugins: [
         "@/plugins/element-ui",
         "@/plugins/axios",
@@ -126,7 +131,8 @@ export default {
         /**
          * 每一个中间件应放置在 middleware/ 目录。文件名的名称将成为中间件名称 (middleware/auth.js将成为 auth 中间件)。
          */
-        middleware: "auth"
+        // 在这里为路由都加入了中间调用，也可以在特定页面单独调用
+        middleware: ["auth"]
     },
     server: {
         port: "6638",

@@ -43,6 +43,7 @@
 // import path from "path";
 import Logo from "~/components/Logo.vue";
 import Loading from "~/components/Loading"; // 加载组件
+import config from "~/config";
 export default {
     head() {
         return {
@@ -67,6 +68,7 @@ export default {
     mounted() {
         // inject $ 挂载查询
         // console.log(this.$info.searchInfo("name"), "信息");
+        console.log("进程消息:%o", config.processInfo);
     },
     methods: {
         /**

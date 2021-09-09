@@ -4,7 +4,7 @@
             v-model="showMenu"
             placement="bottom-start"
             trigger="hover"
-            :close-delay="600"
+            :close-delay="1000"
         >
             <div class="menu-area">
                 <div
@@ -162,9 +162,9 @@ export default {
     font-size: 16px;
     transition: 0.3s height ease-in;
     &_item {
-        line-height: 32px;
+        padding: 6px 0;
         .pointer();
-        transition: 0.3s all ease-in;
+        transition: 0.3s all linear;
     }
     &_item:hover {
         .hover-style(#00c58e, #fff);

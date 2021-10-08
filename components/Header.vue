@@ -163,8 +163,8 @@ export default {
     transition: 0.3s height ease-in;
     &_item {
         padding: 6px 0;
+        transition: 0.3s padding linear;
         .pointer();
-        transition: 0.3s all linear;
     }
     &_item:hover {
         .hover-style(#00c58e, #fff);
@@ -176,6 +176,7 @@ export default {
 
     &_hide {
         padding: 0;
+        margin: 0;
         height: 0;
         overflow: hidden;
     }

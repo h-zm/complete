@@ -1,4 +1,4 @@
-import { fanyiUrl, baseUrl, youdaoUrl } from "./config/index";
+import { fanyiUrl, turingUrl, youdaoUrl } from "./config/index";
 import path from "path";
 import fs from "fs";
 import setenv from "./setenv"; // 环境配置文件
@@ -35,9 +35,11 @@ export default {
     /*
      ** Plugins to load before mounting the App
      */
+
+    // 配置在客户端和服务端共享的环境变量, 实现
     env: {
-        baseUrl: setenv[process.env.NODE_ENV].baseUrl,
-        baseUrl: setenv[process.env.NODE_ENV].baseUrl
+        PATH_ENV: process.env.PATH_ENV,
+        NODE_ENV: process.env.NODE_ENV
     },
     plugins: [
         "@/plugins/element-ui",
@@ -89,7 +91,7 @@ export default {
          * 参考地址 https://github.com/chimurai/http-proxy-middleware/blob/master/recipes/pathRewrite.md#rewrite-paths
          */
         "/turing": {
-            target: baseUrl,
+            target: turingUrl,
             changeOrigin: true,
             pathRewrite: {
                 //如果pathRewrite中有多个替换逻辑，会从上到下的顺序遇到符合的匹配规则执行且不再往执行后面的匹配规则

@@ -1,7 +1,7 @@
 <template>
     <!-- 测试 qrcode  -->
     <div class="qrpage">
-        测试qrcode二维码
+        <contents> 测试qrcode二维码 </contents>
         <div class="qrpage-main">
             <img id="image" />
         </div>
@@ -10,7 +10,9 @@
 
 <script>
 import QRCode from "qrcode";
+import Contents from "../../components/Font/Contents.vue";
 export default {
+    components: { Contents },
     head() {
         return {
             title: "vue文件模板",
@@ -29,6 +31,8 @@ export default {
             type: "image/jpeg",
             quality: 0.3,
             margin: 2,
+            width: 200,
+            scale: 1,
             color: {
                 // 二维码主体色
                 dark: "#000",

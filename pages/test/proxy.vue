@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { baseUrl, fanyiUrl, youdaoUrl } from "../../config/index";
+import { turingUrl, fanyiUrl, youdaoUrl } from "../../config/index";
 import nameInfo from "../../plugins/exporttest";
 import status from "../../middleware/status";
 import { mapState } from "vuex";

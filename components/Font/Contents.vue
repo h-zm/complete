@@ -49,7 +49,7 @@ export default {
     color: #fff;
     border-radius: 6px;
     overflow-x: auto;
-    padding: 4px 6px;
+    padding: 6px 8px;
     margin-bottom: 12px;
 }
 </style>

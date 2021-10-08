@@ -68,7 +68,7 @@ export default {
     mounted() {
         // inject $ 挂载查询
         // console.log(this.$info.searchInfo("name"), "信息");
-        console.log("进程消息:%o", config.processInfo);
+        console.log("全局api", config.baseUrl);
     },
     methods: {
         /**

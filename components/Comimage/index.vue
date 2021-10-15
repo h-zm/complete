@@ -146,7 +146,7 @@ export default {
 
         addUrl(element) {
             // console.log("接收元素:%o", element);
-
+            // fatherEl = document.querySelector(`.${this.elementId}`)
             // 当前元素
             let fatherEl = this.$el;
 

@@ -1,5 +1,7 @@
 const { loadNuxt, build } = require("nuxt");
 
+const consola = require("consola");
+
 const app = require("express")();
 
 // 判断是否不是生产模式
@@ -25,7 +27,11 @@ async function start() {
     }
 
     app.listen(port, "0.0.0.0");
-    console.log("Server listening on `localhost:" + port + "`.");
+    // console.log("Server listening on `localhost:" + port + "`.");
+    consola.ready({
+        message: `Server listening on http://localhost:${port}`,
+        badge: true
+    });
 
     process.on("SIGTERM", () => {
         server.close(() => {

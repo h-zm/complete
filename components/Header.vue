@@ -10,7 +10,7 @@
                 <div
                     class="menu-area_item"
                     :class="{
-                        'menu-area_noList': menu.list && menu.list.length,
+                        'menu-area_havechild': menu.list && menu.list.length,
                         'menu-area_hide': menu.show == false
                     }"
                     :style="{
@@ -160,17 +160,16 @@ export default {
 
 .menu-area {
     font-size: 16px;
-    transition: 0.3s height ease-in;
     &_item {
         padding: 6px 0;
-        transition: 0.3s padding linear;
+        transition: 0.3s padding ease-in-out;
         .pointer();
     }
     &_item:hover {
         .hover-style(#00c58e, #fff);
     }
 
-    &_noList {
+    &_havechild {
         color: #35495e !important;
     }
 

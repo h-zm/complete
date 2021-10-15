@@ -1,7 +1,7 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="example">
-        模板
+        新建Vue文件模板
     </div>
 </template>
 

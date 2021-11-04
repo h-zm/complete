@@ -180,8 +180,7 @@ export default {
     color: #28292a;
     font-size: 14px;
     .flex(center, center);
-    &_tip {
-    }
+
     &_img {
         max-width: 240px !important;
         max-height: 240px !important;

@@ -1,4 +1,4 @@
-import { fanyiUrl, turingUrl, youdaoUrl } from "./config/index";
+import config from "./config/index";
 import path from "path";
 import fs from "fs";
 import setenv from "./setenv"; // 环境配置文件
@@ -15,6 +15,10 @@ export default {
             {
                 name: "viewport",
                 content: "width=device-width, initial-scale=1"
+            },
+            {
+                name: 'version',
+                content: config.version
             },
             {
                 hid: "description",
@@ -68,7 +72,7 @@ export default {
 
     proxy: {
         "/api": {
-            target: fanyiUrl,
+            target: config.fanyiUrl,
             changeOrigin: true,
             pathRewrite: {
                 "^/api": "/"
@@ -91,7 +95,7 @@ export default {
          * 参考地址 https://github.com/chimurai/http-proxy-middleware/blob/master/recipes/pathRewrite.md#rewrite-paths
          */
         "/turing": {
-            target: turingUrl,
+            target: config.turingUrl,
             changeOrigin: true,
             pathRewrite: {
                 //如果pathRewrite中有多个替换逻辑，会从上到下的顺序遇到符合的匹配规则执行且不再往执行后面的匹配规则
@@ -102,7 +106,7 @@ export default {
         },
         // ws: true websocket
         "/youdao": {
-            target: youdaoUrl,
+            target: config.youdaoUrl,
             changeOrigin: true,
             pathRewrite: {
                 "^/youdao": "/"
@@ -150,18 +154,18 @@ export default {
     render: {
         http2: {
             push: true
-            // pushAssets: (req, res, publicPath, preloadFiles) => {
-            // let data = {
-            //   request: req,
-            //   response: res,
-            //   path: publicPath,
-            //   file: preloadFiles
-            // };
-            // console.log(data, "pushAssets配置");
-            // preloadFiles
-            //   .filter(f => f.asType === "script" && f.file === "runtime.js")
-            //   .map(f => `<${publicPath}${f.file}>;rel=preload;as=${f.asType}`);
-            // }
+                // pushAssets: (req, res, publicPath, preloadFiles) => {
+                // let data = {
+                //   request: req,
+                //   response: res,
+                //   path: publicPath,
+                //   file: preloadFiles
+                // };
+                // console.log(data, "pushAssets配置");
+                // preloadFiles
+                //   .filter(f => f.asType === "script" && f.file === "runtime.js")
+                //   .map(f => `<${publicPath}${f.file}>;rel=preload;as=${f.asType}`);
+                // }
         }
     }
 };

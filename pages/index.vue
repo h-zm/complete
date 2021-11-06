@@ -69,6 +69,12 @@ export default {
         // inject $ 挂载查询
         // console.log(this.$info.searchInfo("name"), "信息");
         console.log("全局api", config.baseUrl);
+
+        this.$notify({
+  group: 'foo',
+  title: 'Important message',
+  text: 'Hello user! This is a notification!'
+});
     },
     methods: {
         /**

@@ -45,7 +45,7 @@ export const actions = {
         // if (req.session.user) {
         //     commit("user", req.session.user);
         // }
-        console.log("当前路径参数信息:", params);
+        console.log("当前路径参数信息:", route);
     },
     userInfo(commit) {
         // 添加拦截 设置一些参数

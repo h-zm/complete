@@ -25,6 +25,7 @@ class people {
 }
 
 // nuxt框架可以通过inject讲方法或实例挂载到this全局对象上
+// 通过这种方法可以处理一些使用率较高的请求或者方法
 export default function(context, inject) {
     let { app } = context;
     // console.log("store信息", app);

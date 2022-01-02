@@ -68,15 +68,16 @@ html {
 
 .main {
     padding: 80px 0 0 0;
-    overflow: auto;
     width: 100%;
     height: 100%;
+    overflow: auto;
 }
 
 .main-content {
+    padding: 16px;
     width: 100%;
     min-height: calc(100vh - 160px); // footer header 高度都为80px
-    padding: 12px;
+    background: #f6f6f6;
     overflow: auto;
 }
 </style>

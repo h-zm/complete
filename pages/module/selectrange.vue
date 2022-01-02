@@ -147,12 +147,7 @@
 </template>
 
 <script>
-import {
-    weekInfo,
-    exampleTime,
-    aWeekSchedule,
-    hourList
-} from "~/plugins/selectData";
+import { aWeekSchedule, hourList } from "~/plugins/selectDate";
 import Contents from "../../components/Font/Contents.vue";
 export default {
     components: { Contents },

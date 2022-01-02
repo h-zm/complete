@@ -19,6 +19,7 @@ demand.interceptors.request = request => {
   request.headers["token"] = token;
   return request;
 };
+
 // 设置请求
 demand.interceptors.response = response => {
   return response;

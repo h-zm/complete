@@ -1,5 +1,4 @@
 // ajax 实例
-console.log("123");
 // return;
 // function likeXml(url, method, async) {
 //   // XMLHttpRequest 是 AJAX 的基础  先创建一个实例

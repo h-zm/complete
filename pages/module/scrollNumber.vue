@@ -1,8 +1,8 @@
 <template>
-    <!-- 新建文件的模板 -->
+    <!-- 数字滚动测试 -->
     <div class="scroll">
         <div class="scroll__section">
-            1. 无限滚动
+            1. 数字无限滚动
 
             <div class="scroll__section_item">
                 <NumberAni :numData="varietyNum"></NumberAni>
@@ -10,7 +10,7 @@
         </div>
 
         <div class="scroll__section">
-            2. 操作增减
+            2. 操作数字增减
             <div class="scroll__section_item">
                 <el-button size="mini" @click="addValue('+')">+</el-button>
                 <el-button size="mini" @click="addValue('-')">-</el-button>
@@ -34,7 +34,7 @@ export default {
     data() {
         return {
             // 一直滚动的数字
-            varietyNum: 123,
+            varietyNum: 0,
 
             // 操作的数字
             operateNum: 998
@@ -51,6 +51,7 @@ export default {
     methods: {
         // 初始化数值
         initData() {
+            this.varietyNum = 9999;
             this.timer = setInterval(() => {
                 this.varietyNum = parseInt(Math.random() * 10000000000);
             }, 3000);

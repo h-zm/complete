@@ -1,4 +1,5 @@
 <template>
+    <!-- drag 拖入 -->
     <div class="change">
         <Contents
             >1.鼠标移动下方淡蓝色矩形右边框，会出现移动手标，按住并拖动右边框可以改矩形宽度</Contents

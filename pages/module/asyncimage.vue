@@ -1,5 +1,5 @@
 <template>
-    <!-- 新建文件的模板 -->
+    <!-- 测试图片懒加载 -->
     <div class="image-page">
         <contents>测试懒加载</contents>
 

@@ -1,5 +1,5 @@
 <template>
-    <!-- 模拟拖拽 -->
+    <!-- 模拟拖动 更改熟悉 -->
     <div class="example">
         <!-- 设置draggable属性为true 使得元素可以拖拉-->
         <Contents>

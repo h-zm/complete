@@ -165,10 +165,12 @@ export default {
                     let tempObj = this.transList[i];
                     // 根据差值计算具体的过渡距离
                     let transDis = "";
+
                     /**
                      *  根据差值计算具体的过渡时间
                      * 1.2 -  Math.abs(Number(tempValue[i]) - tempObj.lastValue) / 10;
                      */
+
                     // 或者根据 传入的速度计算过渡时间
                     let transTim = this.setting.speed / 1000;
 
@@ -191,6 +193,7 @@ export default {
                     //     transTim,
                     //     transDis
                     // );
+
                     tempObj.transition = `${transTim}s all ease-in-out`;
                     tempObj.lastValue = Number(tempValue[i]);
                     tempObj.transformDis = transDis;

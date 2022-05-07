@@ -39,6 +39,7 @@ export const mutations = {
 };
 
 export const actions = {
+    // 首次加载或者页面刷新时触发
     // 状态树中指定了 nuxtServerInit 方法，Nuxt.js 调用它的时候会将页面的上下文对象作为第 2 个参数传给它（服务端调用时才会酱紫哟）。当我们想将服务端的一些数据传到客户端时，这个方法是灰常好用的,可以使用通过context中的app使用axios,app.$axios,
     // plugin和nuxtServerInit仅在首次刷新页面时会执行，后续点击页面内跳转不会再执行plugin和nuxtServerInit中的方法。如果打开新页面会再次触发plugin和nuxtServerInit方法。如果 nuxt generate 运行， nuxtServerInit 将为每个生成的动态路由执行
     nuxtServerInit({ commit }, { req, app, params, route, query }) {

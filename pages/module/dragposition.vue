@@ -103,6 +103,7 @@ export default {
             drogElement.classList.remove("drogover");
         },
         handleDrop(e) {
+            console.log("移动完毕", e);
             e.preventDefault();
             // 获取目标id
             const draggedId = e.dataTransfer.getData("text/plain");

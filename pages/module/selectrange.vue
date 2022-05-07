@@ -63,7 +63,6 @@
                             </th>
                         </tr>
                         <tr>
-                            <!-- <th align="center" width="100px">星期/日期</th> -->
                             <td
                                 class="table-thead-td"
                                 colspan="2"
@@ -260,7 +259,7 @@ export default {
                         height: childrenList[i].offsetHeight
                     };
                 }
-                // console.log(this.childNodeList.slice(0, 10), "parentNode");
+                console.log(this.childNodeList.slice(0, 10), "parentNode");
             }, 300);
         },
 

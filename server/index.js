@@ -28,7 +28,7 @@ async function start() {
 
     app.listen(port, "0.0.0.0");
     // console.log("Server listening on `localhost:" + port + "`.");
-    consola.ready({
+    consola.success({
         message: `Server listening on http://localhost:${port}`,
         badge: true
     });

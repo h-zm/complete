@@ -5,6 +5,7 @@
             placement="bottom-start"
             trigger="hover"
             :close-delay="1000"
+            :open-delay="800"
         >
             <div class="menu-area">
                 <div

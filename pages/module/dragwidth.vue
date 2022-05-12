@@ -25,11 +25,29 @@
                 @dragover="handleOver"
             ></div>
         </div>
+
+        <Contents>2.使用 mouse(鼠标事件) 模拟拖拽</Contents>
+        <div class="test-area">
+            <Mousemove>
+                <div class="test-area-left">
+                    通过
+                    <colors>mousedown</colors>、 <colors>mousemove</colors>、
+                    <colors>mouseup</colors> 三个方法实现 ,通过 mousemove
+                    的移动距离转为宽度赋值给目标元素，相比于<colors>
+                        drag </colors
+                    >元素不会脱离文档流 更平滑
+                </div>
+            </Mousemove>
+        </div>
     </div>
 </template>
 
 <script>
+import Mousemove from '~/components/Mousemove.vue';
 export default {
+    components:{
+        Mousemove
+    },
     head() {
         return {
             title: "改变元素宽度",
@@ -83,7 +101,8 @@ export default {
 }
 .test-area {
     .flex(stretch, flex-start);
-    height: 600px;
+    height: 300px;
+    position: relative;
     &-left {
         background: #e2e9f3;
         padding: 12px;

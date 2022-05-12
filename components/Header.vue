@@ -4,8 +4,8 @@
             v-model="showMenu"
             placement="bottom-start"
             trigger="hover"
-            :close-delay="1000"
-            :open-delay="800"
+            :close-delay="800"
+            :open-delay="500"
         >
             <div class="menu-area">
                 <div

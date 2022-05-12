@@ -23,7 +23,7 @@
         </Contents>
         <el-button @click="resetFunc()"> reset </el-button>
         <div class="doing-area">
-            <div class="drag-el">
+            <div class="drag-el" id="beginarea">
                 <div
                     draggable="true"
                     id="dragElement"
@@ -82,7 +82,13 @@ export default {
     methods: {
         // 重置
         resetFunc() {
-            location.reload();
+            // location.reload();
+            // 
+            document.getElementById("beginarea").appendChild(dragElement);
+            // // 添加选中样式
+            drogElement.classList.remove("droped");
+            drogElement.classList.remove("drogover");
+            console.log('drogElement SHUJU',drogElement.classList)
         },
         // 拖拽事件
         dragFunc(e) {
@@ -108,6 +114,7 @@ export default {
             // 获取目标id
             const draggedId = e.dataTransfer.getData("text/plain");
             drogElement.appendChild(document.getElementById(draggedId));
+            // 添加选中样式
             drogElement.classList.add("droped");
         }
     }

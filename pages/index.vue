@@ -71,10 +71,10 @@ export default {
         console.log("全局api", config.baseUrl);
 
         this.$notify({
-  group: 'foo',
-  title: 'Important message',
-  text: 'Hello user! This is a notification!'
-});
+            group: "foo",
+            title: "Important message",
+            text: "Hello user! This is a notification!"
+        });
     },
     methods: {
         /**

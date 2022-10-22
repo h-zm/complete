@@ -125,6 +125,7 @@ export default {
     border: 2px solid transparent;
     animation: reduce 1s linear infinite;
   }
+  
   @keyframes reduce {
     0% {
       border-top-color: #fff;

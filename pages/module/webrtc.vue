@@ -36,18 +36,51 @@
         </div>
 
         <div class="page__operate">
-            <el-button type="primary" @click="join">加入</el-button>
-            <el-button type="primary" @click="leave">离开</el-button>
-            <el-button type="primary" @click="takePhoto">拍照</el-button>
-            <el-button type="primary" @click="sharScreen">分享屏幕</el-button>
-            <el-button type="primary" @click="startRecord(1)"
+            <el-button class="page__operate_button" type="primary" @click="join"
+                >加入</el-button
+            >
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="leave"
+                >离开</el-button
+            >
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="takePhoto"
+                >拍照</el-button
+            >
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="sharScreen"
+                >分享屏幕</el-button
+            >
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="startRecord(1)"
                 >录制用户视频</el-button
             >
-            <el-button type="primary" @click="startRecord(2)"
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="startRecord(2)"
                 >录制屏幕视频</el-button
             >
-            <el-button type="primary" @click="stopRecord">结束录制</el-button>
-            <el-button type="primary" @click="downloadBlob">下载录制</el-button>
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="stopRecord"
+                >结束录制</el-button
+            >
+            <el-button
+                class="page__operate_button"
+                type="primary"
+                @click="downloadBlob"
+                >下载录制</el-button
+            >
         </div>
     </div>
 </template>
@@ -356,6 +389,12 @@ export default {
             max-width: 200px;
             max-height: 200px;
             object-fit: contain;
+        }
+    }
+
+    &__operate {
+        &_button {
+            margin: 0 10px 10px 0;
         }
     }
 }

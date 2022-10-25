@@ -1,7 +1,7 @@
 <template>
     <!-- 利用 链接 生产 二维码  -->
     <div class="qrpage">
-        <contents> 使用 QRCode 插件生成二维码 </contents>
+        <contents> 使用 <codes>QRCode</codes> 插件生成二维码 </contents>
         <div class="qrpage-main">
             <img id="image" />
         </div>

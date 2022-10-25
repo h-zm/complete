@@ -36,8 +36,10 @@
             </div>
         </el-popover>
 
-        <var>header of complete</var>
-        <i class="el-icon-s-home" @click="backHome()" title="到首页"></i>
+        <div class="header__center">
+            <var>header of complete</var>
+            <i class="el-icon-s-home" @click="backHome()" title="到首页"></i>
+        </div>
     </div>
 </template>
 
@@ -104,7 +106,7 @@ export default {
 .header {
     width: 100%;
     height: 80px;
-    // line-height: 80px;
+    line-height: 80px;
     border-bottom: 1px solid #f4f4f4;
     border-radius: 0 0 4px 4px;
     background: #fff;
@@ -130,6 +132,10 @@ export default {
         background: #fff;
         padding: 0 30px;
         .pointer();
+    }
+
+    &__center {
+        .ellipsis(1);
     }
 
     .el-icon-menu {

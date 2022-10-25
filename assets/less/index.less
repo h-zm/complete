@@ -44,6 +44,19 @@
 }
 
 
+// 省略展示
+.ellipsis(@rows: 1) {
+  text-overflow: -o-ellipsis-lastline;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: @rows;
+  line-clamp: @rows;
+  -webkit-box-orient: vertical;
+}
+
+
+
 // 阿里粗体
 .Alibaba-bold {
   @font-face {

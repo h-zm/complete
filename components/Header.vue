@@ -104,6 +104,8 @@ export default {
 <style lang="less" scoped>
 @import "~assets/less/index";
 .header {
+    // 添加一个基础的左右内边距
+    padding: 0 16px;
     width: 100%;
     height: 80px;
     line-height: 80px;
@@ -116,7 +118,6 @@ export default {
     left: 0;
     z-index: @zIndex;
     text-align: center;
-    .flex(center, center);
 
     .el-icon-s-home {
         .pointer();

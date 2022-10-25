@@ -19,18 +19,28 @@
                         marginLeft: movingMagrin.left + 'px'
                     }"
                 ></div>
+
+                <!-- 起始点 -->
                 <!-- <div
-          class="begin-point"
-          :style="{ left: beginPosition.x + 'px', top: beginPosition.y + 'px' }"
-        >
-          ({{ beginPosition.x }},{{ beginPosition.y }})
-        </div>
-        <div
-          class="moving-point"
-          :style="{ left: movingPoint.x + 'px', top: movingPoint.y + 'px' }"
-        >
-          ({{ movingPoint.x }},{{ movingPoint.y }})
-        </div> -->
+                    class="begin-point"
+                    :style="{
+                        left: beginPosition.x + 'px',
+                        top: beginPosition.y + 'px'
+                    }"
+                >
+                    ({{ beginPosition.x }},{{ beginPosition.y }})
+                </div> -->
+
+                <!-- 移动距离 -->
+                <!-- <div
+                    class="moving-point"
+                    :style="{
+                        left: movingPoint.x + 'px',
+                        top: movingPoint.y + 'px'
+                    }"
+                >
+                    ({{ movingPoint.x }},{{ movingPoint.y }})
+                </div> -->
             </div>
 
             <!-- border-collapse:collapse 合并单元格边框 只保留一个 -->
@@ -234,7 +244,7 @@ export default {
                 );
                 let backParent = parentNode[0].offsetParent; // 到dialog-table-time层级
                 this.parentObj = {
-                    top: backParent.offsetTop, // 左外框距离窗口顶侧距离
+                    top: backParent.offsetTop, // 左上框距离窗口顶侧距离
                     left: parentNode[0].offsetLeft + backParent.offsetLeft // 左外框距离窗口左侧距离
                 };
                 // console.log(parentNode, "父级信息");
@@ -243,23 +253,29 @@ export default {
                 let childrenList = document.getElementsByClassName(
                     "table-tbody-span"
                 );
-                // console.log(childrenList, "子级列表信息");
+                console.log(
+                    Array.from(childrenList)[0].getBoundingClientRect(),
+                    "相对于窗口的位置信息"
+                );
                 for (let i in Array.from(childrenList)) {
                     this.childNodeList[i] = {
                         index: i,
                         hover: false, // 用于悬浮的样式判断 父级 td.table-tbody-td
-                        top:
-                            childrenList[i].offsetTop +
-                            childrenList[i].offsetParent.offsetTop +
-                            this.parentObj.top,
-                        left:
-                            childrenList[i].offsetLeft +
-                            childrenList[i].offsetParent.offsetLeft,
+                        // top:
+                        //     childrenList[i].offsetTop +
+                        //     childrenList[i].offsetParent.offsetTop +
+                        //     this.parentObj.top,
+                        // left:
+                        //     childrenList[i].offsetLeft +
+                        //     childrenList[i].offsetParent.offsetLeft,
+                        // 为了避免累加误差 通过 getBoundingClientRect 直接获取相对于窗口的坐标
+                        top: childrenList[i].getBoundingClientRect().top,
+                        left: childrenList[i].getBoundingClientRect().left,
                         width: childrenList[i].offsetWidth,
                         height: childrenList[i].offsetHeight
                     };
                 }
-                console.log(this.childNodeList.slice(0, 10), "parentNode");
+                // console.log(this.childNodeList.slice(0, 10), "parentNode");
             }, 300);
         },
 
@@ -366,7 +382,7 @@ export default {
                         this.movingAttribute.height
                 ]
             };
-            // console.log("当前框选范围", selectRange);
+            console.log("当前框选范围", selectRange);
             for (let i in this.childNodeList) {
                 // console.log(i, this.childNodeList[i], "遍历项");
                 // i 是从 0~335 供336

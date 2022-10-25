@@ -4,6 +4,8 @@ import Vue from "vue";
 // 没有的直接 Vue.use(路径名) 如 // 引入Element-ui则需要通过Vue.use()
 import Contents from "~/components/Font/Contents";
 import Colors from "~/components/Font/Colors";
+import Codes from "~/components/Font/Codes";
 // 如自写的组件，注册到全局通过Vue.components
 Vue.component("Contents", Contents);
 Vue.component("Colors", Colors);
+Vue.component("Codes", Codes);

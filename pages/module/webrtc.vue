@@ -1,7 +1,11 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="page">
-        <Contents>webrtc</Contents>
+        <contents>
+            <codes>webrtc</codes> (Web Real-Time Communications)
+            是一项实时通讯技术，它允许网络应用或者站点，在不借助中间媒介的情况下，建立浏览器之间点对点（Peer-to-Peer）的连接，实现视频流和（或）音频流或者其他任意数据的传输。WebRTC
+            包含的这些标准使用户在无需安装任何插件或者第三方的软件的情况下，创建点对点（Peer-to-Peer）的数据分享和电话会议成为可能。
+        </contents>
 
         <div class="page__area">
             <video
@@ -22,13 +26,13 @@
         </div>
         <div class="page__list" id="imgarea">
             <!-- <img id="testimg" class="page__list_item" src="" alt="" /> -->
-            <div
+            <!-- <div
                 v-for="(item, index) in imgList.length"
                 :key="index"
                 class="page__list_item"
             >
                 <img :src="item" alt="" />
-            </div>
+            </div> -->
         </div>
 
         <div class="page__operate">
@@ -36,6 +40,14 @@
             <el-button type="primary" @click="leave">离开</el-button>
             <el-button type="primary" @click="takePhoto">拍照</el-button>
             <el-button type="primary" @click="sharScreen">分享屏幕</el-button>
+            <el-button type="primary" @click="startRecord(1)"
+                >录制用户视频</el-button
+            >
+            <el-button type="primary" @click="startRecord(2)"
+                >录制屏幕视频</el-button
+            >
+            <el-button type="primary" @click="stopRecord">结束录制</el-button>
+            <el-button type="primary" @click="downloadBlob">下载录制</el-button>
         </div>
     </div>
 </template>
@@ -71,11 +83,23 @@ export default {
                 "saturate(20%)", // 饱和度
                 "sepia(100%)", // 褐色
                 "drop-shadow(4px 4px 8px blue)" // 阴影
-            ]
+            ],
+
+            // 支持的数据类型
+            supported: [],
+
+            // 媒体流数据 用于录制共享屏幕
+            localStream: "",
+
+            mediaRecorder: null,
+
+            // 录制数据
+            blobData: ""
         };
     },
     mounted() {
         // this.getDevices();
+        this.getSupportMimeTypes();
     },
     methods: {
         join() {
@@ -124,6 +148,7 @@ export default {
                 });
 
                 const video = document.querySelector("#userVideo");
+
                 // srcObject 属性设定或返回一个对象，这个对象提供了一个与HTMLMediaElement关联的媒体源，这个对象通常是 MediaStream ，
                 // 但根据规范可以是 MediaSource， Blob 或者 File。
                 video.srcObject = stream;
@@ -177,6 +202,122 @@ export default {
             //         deviceId: { exact: deviceId }
             //     }
             // });
+        },
+        // 媒体记录
+        getSupportMimeTypes() {
+            const media = "video";
+            // 常用的视频格式
+            const types = [
+                "webm",
+                "mp4",
+                "ogg",
+                "mov",
+                "avi",
+                "wmv",
+                "flv",
+                "mkv",
+                "ts",
+                "x-matroska"
+            ];
+
+            // 常用的视屏编码
+            const codecs = [
+                "vp9",
+                "vp9.0",
+                "vp8",
+                "vp8.0",
+                "avc1",
+                "av1",
+                "h265",
+                "h264"
+            ];
+
+            // 返回布尔值来表示是否支持
+            const isSupportted = MediaRecorder.isTypeSupported;
+
+            // 支持的结果
+            const supported = [];
+
+            // 遍历类型，排列组合
+            types.forEach(type => {
+                const mimeType = `${media}/${type}`;
+                codecs.forEach(codec => {
+                    [
+                        `${mimeType};codecs=${codec}`,
+                        `${mimeType};codecs=${codec.toUpperCase()}`
+                    ].forEach(variation => {
+                        if (isSupportted(variation)) supported.push(variation);
+                    });
+                });
+
+                if (isSupportted(mimeType)) supported.push(mimeType);
+            });
+
+            this.supported = supported;
+            console.log("支持的视屏类型", supported);
+        },
+
+        // 录制媒体流
+        startRecord(type) {
+            let stream = "";
+            if (type == 1) {
+                stream = document.querySelector("#userVideo").srcObject || null;
+            } else {
+                stream =
+                    document.querySelector("#localVideo").srcObject || null;
+            }
+
+            if (!stream) {
+                console.log(`未获取到${type == 1 ? "用户" : "屏幕"}相关流数据`);
+                return;
+            }
+
+            const kps = 1024;
+            const Mbps = kps * kps;
+            const options = {
+                audioBitsPerSecond: 128000,
+                videoBitsPerSecond: 2500000,
+                mimeType: "video/webm;codecs=vp8,opus"
+            };
+            console.log("媒体流", stream);
+            /**
+             *  流数据可以是来自于使用 navigator.mediaDevices.getUserMedia() 创建的流或者来自于
+             *   <audio>, <video> 以及 <canvas> DOM 元素。
+             */
+            this.mediaRecorder = new MediaRecorder(stream, options);
+            this.mediaRecorder.start();
+        },
+
+        // 停止录制
+        stopRecord() {
+            // 将获取到可用数据记录下来
+            this.mediaRecorder.ondataavailable = e => {
+                // 将录制的数据合并成一个 Blob 对象
+                // const blob = new Blob([e.data], { type: e.data.type })
+
+                console.log("data", e.data);
+
+                // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
+                this.blobData = new Blob([e.data], { type: "video/webm" });
+            };
+            this.mediaRecorder.stop();
+        },
+
+        // 下载 Blob
+        downloadBlob() {
+            // 将 Blob 对象转换成一个 URL 地址
+            const url = URL.createObjectURL(this.blobData);
+            const a = document.createElement("a");
+            // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
+            a.href = url;
+            // 设置 a 标签的 download 属性为文件名
+            a.download = `${new Date().getTime()}.${
+                this.blobData.type.split("/")[1]
+            }`;
+            // 模拟点击 a 标签
+            a.click();
+            // 释放 URL 地址
+            URL.revokeObjectURL(url);
         }
     },
 

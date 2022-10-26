@@ -57,6 +57,17 @@
                 @click="sharScreen"
                 >分享屏幕</el-button
             >
+
+            <el-select
+                class="page__operate_button"
+                v-model="recordType"
+                placeholder="请选择录制方式"
+            >
+                <el-option label="一次性录制" value="all"> </el-option>
+                <el-option label="间隔录制" value="interval"> </el-option>
+            </el-select>
+        </div>
+        <div class="page__operate">
             <el-button
                 class="page__operate_button"
                 type="primary"
@@ -69,6 +80,7 @@
                 @click="startRecord(2)"
                 >录制屏幕视频</el-button
             >
+
             <el-button
                 class="page__operate_button"
                 type="primary"
@@ -78,8 +90,8 @@
             <el-button
                 class="page__operate_button"
                 type="primary"
-                @click="downloadBlob"
-                >下载录制</el-button
+                @click="downloadVideo"
+                >下载录制视频</el-button
             >
         </div>
     </div>
@@ -126,8 +138,20 @@ export default {
 
             mediaRecorder: null,
 
+            // 录制的数据列表
+            blobList: [],
+
+            // 一次性下载 all , 间隔下载 interval
+            recordType: "interval",
+
             // 录制数据
-            blobData: ""
+            blobData: "",
+
+            // 设置时间轮询获取
+            timer: null,
+
+            // 时间间隔
+            timecell: 5000
         };
     },
     mounted() {
@@ -236,6 +260,7 @@ export default {
             //     }
             // });
         },
+
         // 媒体记录
         getSupportMimeTypes() {
             const media = "video";
@@ -318,26 +343,106 @@ export default {
              *   <audio>, <video> 以及 <canvas> DOM 元素。
              */
             this.mediaRecorder = new MediaRecorder(stream, options);
-            this.mediaRecorder.start();
+
+            if (this.recordType == "all") {
+                // 开始录制 state 变为 recording
+                this.mediaRecorder.start();
+                this.setRecorder();
+            } else {
+                // 间隔获取 需要传入timeslice
+                this.mediaRecorder.start(this.timecell);
+                this.setInterval();
+            }
+
+            console.log("mediaRecorder实例", this.mediaRecorder);
         },
 
-        // 停止录制
-        stopRecord() {
-            // 将获取到可用数据记录下来
+        // 间隔获取录制数据
+        setInterval() {
+            // 清空
+            this.blobList = [];
+            this.mediaRecorder.addEventListener("dataavailable", e => {
+                // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
+                let tempData = new Blob([e.data], { type: "video/webm" });
+                console.log("slice数据", tempData);
+                // let requestData = this.mediaRecorder.requestData();
+                // console.log("requestData", requestData);
+                this.blobList.push(tempData);
+            });
+        },
+
+        // 一次性获取录制数据
+        setRecorder() {
+            /**
+             *  媒体流结束时，所有尚未传递到ondataavailable处理程序的媒体数据都将在单个Blob中传递。
+             *  当调用MediaRecorder.stop() (en-US)时，自记录开始或dataavailable事件最后一次发生
+             *  以来已捕获的所有媒体数据都将传递到Blob}中；此后，捕获结束。也可以使用 requestData，
+             *  调用MediaRecorder.requestData() (en-US) dataavailable时，将传递自记录开始或事件
+             *  最后一次发生以来捕获的所有媒体数据；然后Blob创建一个新文件，并将媒体捕获继续到该 blob 中。
+             */
             this.mediaRecorder.ondataavailable = e => {
                 // 将录制的数据合并成一个 Blob 对象
                 // const blob = new Blob([e.data], { type: e.data.type })
-
                 console.log("data", e.data);
 
                 // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
                 this.blobData = new Blob([e.data], { type: "video/webm" });
             };
-            this.mediaRecorder.stop();
         },
 
-        // 下载 Blob
+        // 停止录制
+        stopRecord() {
+            if (this.mediaRecorder?.state == "recording") {
+                this.mediaRecorder.stop();
+            }
+        },
+
+        // 下载
+        downloadVideo() {
+            if (this.recordType == "all") {
+                this.downloadBlob();
+            } else {
+                this.intervalDownload();
+            }
+        },
+
+        // for 循环下载
+        intervalDownload() {
+            console.log("blobList", this.blobList);
+            let data = "";
+            for (let i in this.blobList) {
+                setTimeout(() => {
+                    // 将 Blob 对象转换成一个 URL 地址
+                    let url = URL.createObjectURL(this.blobList[i]);
+                    console.log("临时路由", url);
+                    let videoItem = document.createElement("video");
+                    videoItem.className = "page__area_video";
+                    videoItem.src = url;
+                    document
+                        .querySelector(".page__area")
+                        .appendChild(videoItem);
+                    let a = document.createElement("a");
+                    // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
+                    a.href = url;
+                    // 设置 a 标签的 download 属性为文件名
+                    a.download = `list${i}.${
+                        this.blobList[i].type.split("/")[1]
+                    }`;
+                    // 模拟点击 a 标签
+                    a.click();
+                    // 释放 URL 地址
+                    // URL.revokeObjectURL(url);
+                }, i * 1000);
+            }
+        },
+
+        // 一次性 下载 Blob
         downloadBlob() {
+            if (!this.blobData?.type) {
+                console.log("未录制视频");
+                return;
+            }
+
             // 将 Blob 对象转换成一个 URL 地址
             const url = URL.createObjectURL(this.blobData);
             const a = document.createElement("a");
@@ -366,7 +471,7 @@ export default {
         min-height: 300px;
         margin: 0 0 20px 0;
         background: @colorebecec;
-        .flex(stretch, flex-start, row, wrap);
+        .flex(stretch, flex-start, wrap, row);
         &_video {
             height: 300px;
             flex: 1;

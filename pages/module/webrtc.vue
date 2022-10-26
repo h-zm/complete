@@ -361,14 +361,17 @@ export default {
         setInterval() {
             // 清空
             this.blobList = [];
-            this.mediaRecorder.addEventListener("dataavailable", e => {
+            this.mediaRecorder.ondataavailable = e => {
                 // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
+                // 暂停
+                this.mediaRecorder.pause();
                 let tempData = new Blob([e.data], { type: "video/webm" });
                 console.log("slice数据", tempData);
-                // let requestData = this.mediaRecorder.requestData();
-                // console.log("requestData", requestData);
+
                 this.blobList.push(tempData);
-            });
+                // 恢复录制
+                this.mediaRecorder.resume();
+            };
         },
 
         // 一次性获取录制数据
@@ -392,7 +395,10 @@ export default {
 
         // 停止录制
         stopRecord() {
-            if (this.mediaRecorder?.state == "recording") {
+            // 录制的状态：inactive（未开始或停止）,recording(正在录制)，paused（暂停）
+            if (this.mediaRecorder?.state !== "inactive") {
+                // let requestData = this.mediaRecorder.requestData();
+                // console.log("requestData", requestData);
                 this.mediaRecorder.stop();
             }
         },

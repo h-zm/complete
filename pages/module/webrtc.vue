@@ -151,7 +151,16 @@ export default {
             timer: null,
 
             // 时间间隔
-            timecell: 5000
+            timecell: 3000,
+
+            mediaOptions: {
+                // 音频码率
+                audioBitsPerSecond: 128000,
+                // 视频码率
+                videoBitsPerSecond: 2500000,
+                // 指定类型
+                mimeType: "video/webm"
+            }
         };
     },
     mounted() {
@@ -312,7 +321,8 @@ export default {
             });
 
             this.supported = supported;
-            console.log("支持的视屏类型", supported);
+            this.mediaOptions.mimeType = this.supported[0];
+            console.log("支持的视屏类型", this.supported);
         },
 
         // 录制媒体流
@@ -330,28 +340,32 @@ export default {
                 return;
             }
 
-            const kps = 1024;
-            const Mbps = kps * kps;
-            const options = {
-                audioBitsPerSecond: 128000,
-                videoBitsPerSecond: 2500000,
-                mimeType: "video/webm;codecs=vp8,opus"
-            };
-            console.log("媒体流", stream);
             /**
+             *
+             *  const kps = 1024;
+             *  const Mbps = kps * kps;
+             *
              *  流数据可以是来自于使用 navigator.mediaDevices.getUserMedia() 创建的流或者来自于
              *   <audio>, <video> 以及 <canvas> DOM 元素。
              */
-            this.mediaRecorder = new MediaRecorder(stream, options);
+
+            this.mediaRecorder = new MediaRecorder(stream, this.mediaOptions);
 
             if (this.recordType == "all") {
                 // 开始录制 state 变为 recording
-                this.mediaRecorder.start();
                 this.setRecorder();
+                this.mediaRecorder.start();
             } else {
                 // 间隔获取 需要传入timeslice
-                this.mediaRecorder.start(this.timecell);
-                this.setInterval();
+                // this.setInterval();
+                // this.mediaRecorder.start(this.timecell);
+
+                this.setRecorder();
+                this.mediaRecorder.start();
+                this.timer = setInterval(() => {
+                    this.mediaRecorder.stop();
+                    this.mediaRecorder.start();
+                }, this.timecell);
             }
 
             console.log("mediaRecorder实例", this.mediaRecorder);
@@ -362,15 +376,11 @@ export default {
             // 清空
             this.blobList = [];
             this.mediaRecorder.ondataavailable = e => {
-                // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
-                // 暂停
-                this.mediaRecorder.pause();
-                let tempData = new Blob([e.data], { type: "video/webm" });
-                console.log("slice数据", tempData);
-
-                this.blobList.push(tempData);
-                // 恢复录制
-                this.mediaRecorder.resume();
+                if (e.data.size > 1024 * 1024) {
+                    // let tempData = new Blob([e.data], { type: "video/webm" });
+                    console.log("存入数据", e.data);
+                    this.blobList.push(e.data);
+                }
             };
         },
 
@@ -386,15 +396,27 @@ export default {
             this.mediaRecorder.ondataavailable = e => {
                 // 将录制的数据合并成一个 Blob 对象
                 // const blob = new Blob([e.data], { type: e.data.type })
-                console.log("data", e.data);
+                // console.log("data", e.data);
 
                 // 🌸重点是这个地方，我们不要把获取到的 e.data.type设置成 blob 的 type，而是直接改成 mp4
-                this.blobData = new Blob([e.data], { type: "video/webm" });
+
+                if (this.recordType == "all") {
+                    this.blobData = new Blob([e.data], { type: "video/webm" });
+                } else {
+                    let tempData = new Blob([e.data], { type: "video/webm" });
+                    this.downloadNow(tempData);
+                }
             };
         },
 
         // 停止录制
         stopRecord() {
+            // 如果是分开切换
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
+
             // 录制的状态：inactive（未开始或停止）,recording(正在录制)，paused（暂停）
             if (this.mediaRecorder?.state !== "inactive") {
                 // let requestData = this.mediaRecorder.requestData();
@@ -408,38 +430,54 @@ export default {
             if (this.recordType == "all") {
                 this.downloadBlob();
             } else {
-                this.intervalDownload();
+                this.timesliceDownload();
             }
         },
 
-        // for 循环下载
+        downloadNow(data) {
+            // 将 Blob 对象转换成一个 URL 地址
+            const url = URL.createObjectURL(data);
+            const a = document.createElement("a");
+            // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
+            a.href = url;
+            // 设置 a 标签的 download 属性为文件名
+            a.download = `${new Date().getTime()}.webm`;
+            // 模拟点击 a 标签
+            a.click();
+            // 释放 URL 地址
+            URL.revokeObjectURL(url);
+        },
+
+        // 将每段时间和在一起进行下载
         intervalDownload() {
             console.log("blobList", this.blobList);
-            let data = "";
-            for (let i in this.blobList) {
-                setTimeout(() => {
-                    // 将 Blob 对象转换成一个 URL 地址
-                    let url = URL.createObjectURL(this.blobList[i]);
-                    console.log("临时路由", url);
-                    let videoItem = document.createElement("video");
-                    videoItem.className = "page__area_video";
-                    videoItem.src = url;
-                    document
-                        .querySelector(".page__area")
-                        .appendChild(videoItem);
-                    let a = document.createElement("a");
-                    // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
-                    a.href = url;
-                    // 设置 a 标签的 download 属性为文件名
-                    a.download = `list${i}.${
-                        this.blobList[i].type.split("/")[1]
-                    }`;
-                    // 模拟点击 a 标签
-                    a.click();
-                    // 释放 URL 地址
-                    // URL.revokeObjectURL(url);
-                }, i * 1000);
-            }
+            // MediaRecorder使用start()方法，这个方法可以设置时间，比如start(1000)相当于把每隔个1000毫秒把媒体流存放到一个数组中，比如你需要200M,你可以去计算每隔1000毫秒添加进去的blob大小去计算，当blob的总的大小为200M就把这个视频上传，我之前是按这种方式去做的，但是后面发现有问题，这个分割出来的视频只有第一个视频能播放，后面的视频不能播放（无效视频），当时没发现啥问题，这个问题困扰了我一天，后来才发现原来是元数据的问题,元数据好比描述文件结构，那么可以理解一个文件里面需要元数据和实际的数据，在datavailable事件中data中获得的内容只是生成的整个文件的一部分. 第一个通常包含元数据和一些其他数据,但下一部分不包含元数据，这个就是问题所在，所以为什么只能播放第一个视频，后面的播放不了，因为后面的数据不包含元数据，所以这种方法果断放弃了!
+
+            // 将 Blob 对象转换成一个 URL 地址
+            let blob = new Blob(this.blobList, {
+                type: "video/webm"
+            });
+            let url = window.URL.createObjectURL(blob);
+            console.log("临时路由", url);
+            let videoItem = document.createElement("video");
+            videoItem.className = "page__area_video";
+            videoItem.src = url;
+            videoItem.controls = "controls";
+            document.querySelector(".page__area").appendChild(videoItem);
+            let a = document.createElement("a");
+            a.style.display = "none";
+            // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
+            a.href = url;
+            a.download = `list${i}.webm`;
+            document.body.appendChild(a);
+            // 设置 a 标签的 download 属性为文件名
+            // 模拟点击 a 标签
+            a.click();
+            setTimeout(() => {
+                // 释放 URL 地址
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 100);
         },
 
         // 一次性 下载 Blob

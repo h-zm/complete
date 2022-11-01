@@ -430,7 +430,7 @@ export default {
             if (this.recordType == "all") {
                 this.downloadBlob();
             } else {
-                this.timesliceDownload();
+                // this.timesliceDownload();
             }
         },
 
@@ -503,7 +503,10 @@ export default {
         }
     },
 
-    beforeDestroy() {}
+    beforeDestroy() {
+        clearInterval(this.timer);
+        this.timer;
+    }
 };
 </script>
 

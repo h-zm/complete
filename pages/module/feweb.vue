@@ -1,6 +1,7 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="plug">
+        <input type="file" @input="chooseFile($event)" />
         <div class="plug__video">
             <div>
                 live：
@@ -10,6 +11,7 @@
                     muted
                     src=""
                     autoplay
+                    playbackRate="2"
                 ></video>
             </div>
             <div>
@@ -35,6 +37,7 @@ import {
     download,
     clearCount
 } from "~/plugins/po.js";
+import http from "axios";
 export default {
     head() {
         return {
@@ -60,6 +63,28 @@ export default {
             } else {
                 download();
             }
+        },
+
+        chooseFile(data) {
+            console.log("选择文件", data.srcElement.files[0]);
+            this.upload(data.srcElement.files);
+        },
+
+        upload(file) {
+            http.post(
+                "http://140.210.90.177:85/datasience/vbap3/dashboard/transfer/uploadFile",
+                {
+                    file: formData
+                },
+                {
+                    headers: {
+                        guid: "datascience",
+                        token:
+                            "Vw9DfmP0jaTX3BPOmORpVx6XK0GhMzzQHtptQw1UsFlfgUervZ4dodCJk2F/VQWn8jTz9Tn3HlJfR0HS7Ikr+dJBpUIszowEhif8ShFWUC2owzjbgDfl5lL0BgLWntrPUekHZdgpjzQGOqpdRIvRjJx+X83Sv1djwQz30XmDVzNk2xFxnfd2EB/UoxrIEsstk4eqBciPkHvVR7c9BAT6dw==",
+                        "Content-Type": "multipart/form-data"
+                    }
+                }
+            );
         }
     }
 };

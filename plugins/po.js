@@ -1,8 +1,14 @@
-// option
+// 获取视频流信息
+var constants;
+
+// 设置录制的视频流属性
 var mediaOptions;
 
 //用于录制视频
 var mediaRecord;
+
+// 用于记录整段视频
+var recordWhole;
 
 //视频流
 var mediaStream;
@@ -14,10 +20,10 @@ var startTime = 0;
 var recordTimer = null;
 
 //保存整段视频数据
-var videoBuffer = [];
+var chunks = [];
 
 //用于记录某段视频视频
-var partBuffer = [];
+var partChunks = [];
 
 // 支持的视频类型
 var supportedList = [];
@@ -30,6 +36,9 @@ var videoLive;
 
 var videoPreview;
 
+// 视频输出方式
+var outputType = "";
+
 // 倒计时
 var countdown = null;
 
@@ -38,6 +47,51 @@ var countTime = 0;
 
 // 视频下载方式 一次性下载 one 间隔下载 more
 var recordType;
+
+// 主体
+var content = null;
+
+// 插件初始化
+async function init(defaultData = "") {
+    await getSupports();
+
+    mediaOptions = {
+        // 音频码率
+        audioBitsPerSecond: defaultData.audioBitsPerSecond || 128000,
+        // 视频码率
+        videoBitsPerSecond: defaultData.videoBitsPerSecond || 2500000,
+        // 指定类型
+        mimeType: defaultData.mimeType || supportedList[0] || "video/webm"
+    };
+
+    videoSize = defaultData.videoSize || 1024;
+
+    recordType = defaultData.recordType || "one";
+
+    countTime = defaultData.countTime || 1000;
+
+    constants = defaultData.constants || {
+        audio: true,
+        video: true
+    };
+
+    if (defaultData.outputType) {
+        outputType = defaultData.outputType;
+    }
+
+    // 渲染自生样式 不需要noRender参数传入true即可
+    if (!defaultData.noRender) {
+        content = null;
+        render();
+    }
+
+    // 页面卸载去除倒计时
+    addListeners();
+
+    // 视频展示区
+    videoLive = document.getElementById("live");
+    videoPreview = document.getElementById("preview");
+}
 
 // 获取当前支持的录制类型
 function getSupports() {
@@ -94,55 +148,42 @@ function getSupports() {
     // console.log("fe-wecrtc support--", supportedList);
 }
 
-// 数据初始化
-async function init(defaultData = "") {
-    await getSupports();
-
-    mediaOptions = {
-        // 音频码率
-        audioBitsPerSecond: defaultData.audioBitsPerSecond || 128000,
-        // 视频码率
-        videoBitsPerSecond: defaultData.videoBitsPerSecond || 2500000,
-        // 指定类型
-        mimeType: defaultData.mimeType || supportedList[0] || "video/webm"
-    };
-
-    videoSize = defaultData.videoSize || 1024 * 10;
-
-    recordType = defaultData.recordType || "one";
-
-    countTime = defaultData.countTime || 1000;
-
-    // 渲染自定义样式
-    if (!defaultData.noRender) {
-        render();
-    }
-
-    // 页面卸载去除倒计时
-    window.addEventListener("beforeunload", event => {
-        if (recordTimer) {
-            clearInterval(recordTimer);
-            recordTimer = null;
+// 添加一些页面监听事件
+function addListeners() {
+    // hash 模式
+    window.addEventListener("hashchange", event => {
+        clearCurrentInterval();
+        if (content) {
+            document.body.removeChild(content);
+            content = null;
         }
     });
-
-    // 视频展示区
-    videoLive = document.getElementById("live");
+    // history模式
+    window.addEventListener("popstate", event => {
+        clearCurrentInterval();
+        if (content) {
+            document.body.removeChild(content);
+            content = null;
+        }
+    });
 }
 
 /**
  * 开始录屏
  */
 async function startRecord() {
-    if (!navigator.mediaDevices && !navigator.mediaDevices.getDisplayMedia) {
-        alert("当前浏览器不支持屏幕捕捉");
+    // navigator.mediaDevices.getDisplayMedia 只支持localhost 或者 https 调用
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        alert(
+            "当前浏览器不支持屏幕捕捉或是当前访问头不支持使用navigator.mediaDevices"
+        );
         return;
     }
 
     reset();
 
     //获取视频流，这时候会弹出用户选择框，前提用户设备支持
-    mediaStream = await navigator.mediaDevices.getDisplayMedia();
+    mediaStream = await navigator.mediaDevices.getDisplayMedia(constants);
 
     console.log("fe-webrtc mediaStream--", mediaStream);
 
@@ -150,19 +191,45 @@ async function startRecord() {
         videoLive.srcObject = mediaStream;
     }
 
-    // 初始化开始
+    // 用于分段下载
     mediaRecord = new MediaRecorder(mediaStream, mediaOptions);
+    /**
+     * 分段下载下来拼凑的数据转化成视频和第一段视频一样
+     * 可能是分段录取使用了stop和start的方法，导致
+     * 各段之间元数据不一样，按照 chunks中的顺序生成第一段视频后
+     * 不能和之后的再合成，所以新添加一个 recordWhole 用于整段记录
+     * */
+
+    // 用于整段视频下载
+    recordWhole = new MediaRecorder(mediaStream, mediaOptions);
 
     mediaRecord.ondataavailable = e => {
-        // console.log("视频大小", e.data.size);
+        console.log("视频大小", e.data);
+        // e.data.stream().then(res => {
+        //     console.log("stream res", res);
+        // });
         if (e.data.size > videoSize) {
-            videoBuffer.push(e.data);
-            partBuffer.push(e.data);
+            // chunks.push(e.data);
+            // partChunks.push(e.data);
+            partChunks = [e.data];
+            createVideo(partChunks);
+            mediaRecord.start();
         }
     };
 
-    //每隔倒计时时间保存一下 兼容分段下载;
-    mediaRecord.start(countTime);
+    recordWhole.ondataavailable = e => {
+        if (e.data.size > videoSize) {
+            chunks.push(e.data);
+        }
+    };
+
+    console.log("mediaRecord", mediaRecord);
+    console.log("recordWhole", recordWhole);
+
+    //设置timeslice不能兼容分段下载;
+    mediaRecord.start();
+
+    recordWhole.start();
 
     startTime = new Date().valueOf();
 
@@ -181,46 +248,13 @@ async function startRecord() {
     console.log("fe-webrtc begin--");
 }
 
-// 下载某段视频
-function downloadPart() {
-    mediaRecord.stop();
-    createVideo(partBuffer);
-    partBuffer = [];
-    mediaRecord.start(countTime);
-}
-
-// 下载整段视频
-function download() {
-    createVideo(videoBuffer);
-}
-
-function reset() {
-    stopRecord();
-    mediaRecord = null;
-    mediaStream = null;
-    startTime = 0;
-    videoBuffer = [];
-    partBuffer = [];
-}
-
-// 清湖倒计时
-function clearCount() {
-    clearInterval(countdown);
-    countdown = null;
-}
-
 /**
  * 停止录制
  */
 function stopRecord() {
-    if (countdown) {
-        clearCount();
-    }
+    clearCurrentInterval();
 
-    if (recordTimer) {
-        clearInterval(recordTimer);
-        recordTimer = null;
-    }
+    // 初始化计时器
     setTimeHtml("00:00");
 
     if (mediaStream) {
@@ -229,14 +263,79 @@ function stopRecord() {
         }
     }
 
-    mediaRecord && mediaRecord.state !== "inactive" && mediaRecord.stop();
+    if (mediaRecord && mediaRecord.state !== "inactive") {
+        mediaRecord.stop();
+        console.log("fe-webrtc stop---");
+    }
 
-    console.log("fe-webrtc stop---");
+    if (recordWhole && recordWhole.state !== "inactive") {
+        recordWhole.stop();
+        console.log("fe-webrtc stop---");
+    }
 }
 
-// 返回下载的视频类型
+/**
+ * 下载某段视频
+ */
+function downloadPart() {
+    if (mediaRecord && mediaRecord.state !== "inactive") {
+        mediaRecord.stop();
+        // 延迟 ondataavailable 中返回数据
+        // setTimeout(() => {
+        //     createVideo(partChunks);
+        //     partChunks = [];
+        //     mediaRecord.start();
+        // }, 800);
+    } else {
+        createVideo(partChunks);
+    }
+}
+
+/**
+ * 下载整片
+ */
+function download() {
+    createVideo(chunks);
+}
+
+/**
+ *  开始共享前充值一些数据
+ */
+function reset() {
+    stopRecord();
+    mediaRecord = null;
+    recordWhole = null;
+    mediaStream = null;
+    startTime = 0;
+    chunks = [];
+    partChunks = [];
+}
+
+/**
+ *  清除倒计时
+ */
+function clearCurrentInterval() {
+    if (countdown) {
+        clearInterval(countdown);
+        countdown = null;
+    }
+
+    if (recordTimer) {
+        clearInterval(recordTimer);
+        recordTimer = null;
+    }
+}
+
+/**
+ *  返回下载视频的类型
+ */
 function getDownloadType() {
     // 设置 a 标签的 download 属性为文件名
+    // 有传入的优先
+    if (outputType) {
+        return outputType;
+    }
+    // 咩有的从mediaOptions.mimeType获取
     let type = mediaOptions.mimeType.split("/")[1];
     if (type.includes(";")) {
         type = mediaOptions.mimeType.split("/")[1].split(";")[0];
@@ -244,27 +343,27 @@ function getDownloadType() {
     return type;
 }
 
-// 生成视频
+/**
+ * 生成视频
+ */
 function createVideo(data) {
     if (data == null || data.length == 0) {
         alert("没有视频数据");
         return;
     }
 
+    console.log("要下载的大小", data);
+
     // 将 Blob 对象转换成一个 URL 地址
     let blob = new Blob(data, {
         type: mediaOptions.mimeType
     });
 
+    console.log("blob数据", blob);
+
     let url = URL.createObjectURL(blob);
 
     console.log("fe-webrtc create--", url);
-
-    // 预览 没起node服务 可能存在展示不了
-    if (videoPreview) {
-        videoPreview.controls = "controls";
-        videoPreview.src = url;
-    }
 
     let a = document.createElement("a");
     a.style = "display: none";
@@ -275,10 +374,27 @@ function createVideo(data) {
     document.body.appendChild(a);
     // 模拟点击 a 标签
     a.click();
-    // 释放 URL 地址
-    window.URL.revokeObjectURL(url);
+
+    // 可以预览
+    if (videoPreview) {
+        videoPreview.controls = "controls";
+        /**
+         *  window.URL.revokeObjectURL 释放过早会导致videoPreview预览失败
+         *  所以下面使用了 setTimeout 延时释放
+         */
+        videoPreview.src = url;
+    }
+
+    setTimeout(() => {
+        // 释放 URL 地址
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }, 1000);
 }
 
+/**
+ * 判断是否大于9
+ */
 function judgeNine(data) {
     if (data) {
         if (parseInt(data) > 9) {
@@ -291,7 +407,9 @@ function judgeNine(data) {
     }
 }
 
-// 计算录制时长
+/**
+ *  计算录制时长
+ */
 function judgeTime() {
     if (!startTime) {
         return "00:00";
@@ -300,6 +418,7 @@ function judgeTime() {
     // 获取秒差值
     // var secondTime = (new Date().valueOf() - startTime) / 1000 + 600.789;
     var secondTime = parseInt((new Date().valueOf() - startTime) / 1000);
+    console.log("计算的秒差值", secondTime);
     // 分
     var minuteTime = 0;
     // 小时
@@ -331,65 +450,86 @@ function judgeTime() {
         time = judgeNine(hourTime) + ":" + time;
     }
 
-    if (time == "10:00") {
-        downloadPart();
-    } else if (time == "20:00") {
-        downloadPart();
-        stopRecord();
-    }
+    // 要获取视频的时长要比设置的多一秒
+    // if (time == "00:05") {
+    //     downloadPart();
+    // } else if (time == "00:10") {
+    //     downloadPart();
+    // }
 
     return time;
 }
 
-// 设置展示时长
+/**
+ * 设置计时器时长
+ */
 function setTimeHtml(data = "") {
     let timeEle = document.getElementsByClassName("fetab__block")[0];
     timeEle.innerHTML = data || judgeTime();
 }
 
-// 渲染样式
+/**
+ *  渲染标签
+ */
 function render() {
-    const content = document.createElement("div");
-    content.className = "fetab";
-    content.style.cssText =
-        "position: fixed;top: 28px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 8px 10px;width: fit-content;background: #fff;border: 1px solid #f5f5f5;border-radius: 2px 2px 16px 16px;box-shadow: 0px 6px 8px 0px rgba(174, 185, 181, 0.2);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.2s opacity ease;";
+    // 主元素
+    content = createElement("div", {
+        class: "fetab",
+        style:
+            "position: fixed;top: 28px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 8px 10px;width: fit-content;background: #fff;border: 1px solid #f5f5f5;border-radius: 16px;box-shadow: 0px 6px 8px 0px rgba(174, 185, 181, 0.12);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.2s opacity ease;"
+    });
 
-    // 块级元素
-    const contenTime = document.createElement("div");
-    contenTime.className = "fetab__block";
-    contenTime.style.cssText =
-        "/* 布局 */display: flex;align-items: center;justify-content: center;";
+    // 计时块
+    const timeBlock = createElement("div", {
+        class: "fetab__block",
+        text: "00:00",
+        style:
+            "/* 布局 */margin: 0 0 6px 0;width:100%;font-size: 14px;text-align:center;"
+    });
 
-    // 展示时长
-    contenTime.innerHTML = "00:00";
-    content.appendChild(contenTime);
+    content.appendChild(timeBlock);
 
-    const contentBtn = document.createElement("div");
-    contentBtn.className = "fetab__block";
-    contentBtn.style.cssText =
-        "/* 布局 */display: flex;align-items: center;justify-content: center;";
+    const contentBtn = createElement("div", {
+        class: "fetab__block",
+        style:
+            "/* 布局 */display: flex;align-items: center;justify-content: center;"
+    });
 
     // 展示按钮区域
-    let btnList = ["共享屏幕", "下载分段视频", "下载整段视频", "结束共享"];
+    let btnList = ["共享屏幕", "下载切片", "下载整片", "结束共享"];
     for (let i = 0; i < btnList.length; i++) {
-        const element = document.createElement("div");
-        element.innerHTML = btnList[i];
-        element.className = "fetab__item";
-        element.style.cssText = "padding: 6px 8px;cursor: pointer;";
+        let element = createElement("div", {
+            class: "fetab__block_item",
+            text: btnList[i],
+            style:
+                "padding: 4px 10px;cursor: pointer;border-radius:6px;transition: .2s all ease",
+
+            mouseover: function() {
+                // 设置悬浮时的背景色
+                this.style.backgroundColor = "#f5f5f6";
+            },
+            mouseout: function() {
+                // 设置悬浮时的背景色
+                this.style.backgroundColor = "transparent";
+            }
+        });
+
+        // 绑定事件
         switch (btnList[i]) {
             case "共享屏幕":
                 element.onclick = startRecord;
                 break;
-            case "下载分段视频":
+            case "下载切片":
                 element.onclick = downloadPart;
                 break;
-            case "下载整段视频":
+            case "下载整片":
                 element.onclick = download;
                 break;
             case "结束共享":
                 element.onclick = stopRecord;
                 break;
         }
+
         contentBtn.appendChild(element);
     }
 
@@ -404,11 +544,43 @@ function render() {
     }
 }
 
+// 创建元素
+function createElement(tagName, options = "") {
+    let ele = document.createElement(tagName);
+
+    // 文本内容
+    if (options?.text) {
+        ele.innerHTML = options.text;
+    }
+
+    // 类名
+    if (options?.class) {
+        ele.className = options.class;
+    }
+
+    // 具体样式
+    if (options?.style) {
+        // for (let i in options.style) {
+        //     ele.style[i] = options.style[i];
+        // }
+        ele.style.cssText = options.style;
+    }
+
+    if (options?.mouseover) {
+        ele.onmouseover = options.mouseover;
+    }
+
+    if (options?.mouseout) {
+        ele.onmouseout = options.mouseout;
+    }
+
+    return ele;
+}
+
 module.exports = {
     init,
     getSupports,
     startRecord,
     stopRecord,
-    download,
-    clearCount
+    download
 };

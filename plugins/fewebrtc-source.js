@@ -66,10 +66,6 @@ async function init(defaultData = "") {
 
     videoSize = defaultData.videoSize || 1024;
 
-    recordType = defaultData.recordType || "one";
-
-    countTime = defaultData.countTime || 1000;
-
     constants = defaultData.constants || {
         audio: true,
         video: true
@@ -158,6 +154,7 @@ function addListeners() {
             content = null;
         }
     });
+
     // history模式
     window.addEventListener("popstate", event => {
         clearCurrentInterval();
@@ -193,27 +190,19 @@ async function startRecord() {
 
     // 用于分段下载
     mediaRecord = new MediaRecorder(mediaStream, mediaOptions);
+
     /**
      * 分段下载下来拼凑的数据转化成视频和第一段视频一样
      * 可能是分段录取使用了stop和start的方法，导致
      * 各段之间元数据不一样，按照 chunks中的顺序生成第一段视频后
      * 不能和之后的再合成，所以新添加一个 recordWhole 用于整段记录
      * */
-
-    // 用于整段视频下载
     recordWhole = new MediaRecorder(mediaStream, mediaOptions);
 
     mediaRecord.ondataavailable = e => {
-        console.log("视频大小", e.data);
-        // e.data.stream().then(res => {
-        //     console.log("stream res", res);
-        // });
         if (e.data.size > videoSize) {
             // chunks.push(e.data);
-            // partChunks.push(e.data);
             partChunks = [e.data];
-            createVideo(partChunks);
-            mediaRecord.start();
         }
     };
 
@@ -223,8 +212,8 @@ async function startRecord() {
         }
     };
 
-    console.log("mediaRecord", mediaRecord);
-    console.log("recordWhole", recordWhole);
+    // console.log("mediaRecord", mediaRecord);
+    // console.log("recordWhole", recordWhole);
 
     //设置timeslice不能兼容分段下载;
     mediaRecord.start();
@@ -254,9 +243,6 @@ async function startRecord() {
 function stopRecord() {
     clearCurrentInterval();
 
-    // 初始化计时器
-    setTimeHtml("00:00");
-
     if (mediaStream) {
         for (let track of mediaStream.getTracks()) {
             track.stop();
@@ -265,13 +251,15 @@ function stopRecord() {
 
     if (mediaRecord && mediaRecord.state !== "inactive") {
         mediaRecord.stop();
-        console.log("fe-webrtc stop---");
     }
 
     if (recordWhole && recordWhole.state !== "inactive") {
         recordWhole.stop();
-        console.log("fe-webrtc stop---");
+        console.log("fe-webrtc stop--", judgeTime());
     }
+
+    // 初始化计时器
+    setTimeHtml("00:00");
 }
 
 /**
@@ -281,11 +269,10 @@ function downloadPart() {
     if (mediaRecord && mediaRecord.state !== "inactive") {
         mediaRecord.stop();
         // 延迟 ondataavailable 中返回数据
-        // setTimeout(() => {
-        //     createVideo(partChunks);
-        //     partChunks = [];
-        //     mediaRecord.start();
-        // }, 800);
+        setTimeout(() => {
+            createVideo(partChunks);
+            mediaRecord.start();
+        }, 500);
     } else {
         createVideo(partChunks);
     }
@@ -295,6 +282,10 @@ function downloadPart() {
  * 下载整片
  */
 function download() {
+    if (!chunks.length) {
+        alert("请在结束共享后下载整片视频");
+        return;
+    }
     createVideo(chunks);
 }
 
@@ -352,22 +343,16 @@ function createVideo(data) {
         return;
     }
 
-    console.log("要下载的大小", data);
-
     // 将 Blob 对象转换成一个 URL 地址
     let blob = new Blob(data, {
         type: mediaOptions.mimeType
     });
-
-    console.log("blob数据", blob);
-
     let url = URL.createObjectURL(blob);
-
     console.log("fe-webrtc create--", url);
 
+    // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
     let a = document.createElement("a");
     a.style = "display: none";
-    // 设置 a 标签的 href 属性为刚刚生成的 URL 地址
     a.href = url;
     // 设置 a 标签的 download 属性为文件名
     a.download = `${new Date().getTime()}.${getDownloadType()}`;
@@ -418,7 +403,6 @@ function judgeTime() {
     // 获取秒差值
     // var secondTime = (new Date().valueOf() - startTime) / 1000 + 600.789;
     var secondTime = parseInt((new Date().valueOf() - startTime) / 1000);
-    console.log("计算的秒差值", secondTime);
     // 分
     var minuteTime = 0;
     // 小时
@@ -464,31 +448,31 @@ function judgeTime() {
  * 设置计时器时长
  */
 function setTimeHtml(data = "") {
-    let timeEle = document.getElementsByClassName("fetab__block")[0];
-    timeEle.innerHTML = data || judgeTime();
+    let timeEle = document.querySelector(".fetab__block_timing");
+    let temp = data || judgeTime();
+    // innerHTML 是推入模版字符串 或是 文本
+    timeEle.innerHTML = temp;
 }
 
 /**
  *  渲染标签
  */
 function render() {
-    // 主元素
-    content = createElement("div", {
-        class: "fetab",
-        style:
-            "position: fixed;top: 28px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 8px 10px;width: fit-content;background: #fff;border: 1px solid #f5f5f5;border-radius: 16px;box-shadow: 0px 6px 8px 0px rgba(174, 185, 181, 0.12);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.2s opacity ease;"
+    // 计时块
+    const timing = createElement("div", {
+        class: "fetab__block_timing",
+        text: "00:00"
     });
 
-    // 计时块
+    // 上模块
     const timeBlock = createElement("div", {
         class: "fetab__block",
-        text: "00:00",
+        child: [timing],
         style:
-            "/* 布局 */margin: 0 0 6px 0;width:100%;font-size: 14px;text-align:center;"
+            "/* 布局 */margin: 0 0 4px 0;width:100%;font-size: 14px;display: flex;align-items: center;justify-content: center;"
     });
 
-    content.appendChild(timeBlock);
-
+    // 下模块
     const contentBtn = createElement("div", {
         class: "fetab__block",
         style:
@@ -502,7 +486,7 @@ function render() {
             class: "fetab__block_item",
             text: btnList[i],
             style:
-                "padding: 4px 10px;cursor: pointer;border-radius:6px;transition: .2s all ease",
+                "padding: 6px 10px;cursor: pointer;border-radius:6px;transition: .2s all ease",
 
             mouseover: function() {
                 // 设置悬浮时的背景色
@@ -533,10 +517,16 @@ function render() {
         contentBtn.appendChild(element);
     }
 
-    content.appendChild(contentBtn);
+    // 主元素
+    content = createElement("div", {
+        class: "fetab",
+        child: [timeBlock, contentBtn],
+        style:
+            "position: fixed;top: 28px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 8px 10px;width: fit-content;background: #fff;border: 1px solid #f5f5f5;border-radius: 16px;box-shadow: 0px 6px 8px 0px rgba(199, 199, 199, 0.12);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.2s opacity ease;"
+    });
 
     // 加入页面中
-    if (document?.body) {
+    if (document) {
         document.body.appendChild(content);
         setTimeout(() => {
             content.style.opacity = 1;
@@ -549,32 +539,77 @@ function createElement(tagName, options = "") {
     let ele = document.createElement(tagName);
 
     // 文本内容
-    if (options?.text) {
+    if (options.text) {
         ele.innerHTML = options.text;
     }
 
+    // 节点内容
+    if (options.child) {
+        ele.append(...options.child);
+    }
+
     // 类名
-    if (options?.class) {
+    if (options.class) {
         ele.className = options.class;
     }
 
     // 具体样式
-    if (options?.style) {
+    if (options.style) {
         // for (let i in options.style) {
         //     ele.style[i] = options.style[i];
         // }
         ele.style.cssText = options.style;
     }
 
-    if (options?.mouseover) {
+    if (options.src) {
+        ele.src = options.src;
+    }
+
+    if (options.mouseover) {
         ele.onmouseover = options.mouseover;
     }
 
-    if (options?.mouseout) {
+    if (options.mouseout) {
         ele.onmouseout = options.mouseout;
     }
 
     return ele;
+}
+
+/**
+ *  返回blob数据(promise)
+ */
+function getBlobData() {
+    return new Promise((resolve, reject) => {
+        const data = {
+            // 分片
+            part: "",
+            // 整段
+            whole: ""
+        };
+
+        try {
+            if (chunks.length) {
+                data.whole = new Blob(chunks, {
+                    type: mediaOptions.mimeType
+                });
+            }
+
+            if (partChunks.length) {
+                data.part = new Blob(partChunks, {
+                    type: mediaOptions.mimeType
+                });
+            }
+            resolve(data);
+        } catch {
+            resolve({
+                whole: "",
+                part: ""
+            });
+        }
+
+        console.log("fewebrtc backData--");
+    });
 }
 
 module.exports = {
@@ -582,5 +617,7 @@ module.exports = {
     getSupports,
     startRecord,
     stopRecord,
-    download
+    download,
+    downloadPart,
+    getBlobData
 };

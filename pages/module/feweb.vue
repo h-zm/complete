@@ -2,6 +2,7 @@
     <!-- 新建文件的模板 -->
     <div class="plug">
         <input type="file" @input="chooseFile($event)" />
+        <el-button @click="handleBack">fanhi</el-button>
         <div class="plug__video">
             <div>
                 live：
@@ -35,8 +36,8 @@ import {
     startRecord,
     stopRecord,
     download,
-    clearCount
-} from "~/plugins/po.js";
+    getBlobData
+} from "fe-webrtc";
 import http from "axios";
 export default {
     head() {
@@ -63,6 +64,12 @@ export default {
             } else {
                 download();
             }
+        },
+
+        handleBack() {
+            getBlobData().then(res => {
+                console.log("fewebrtc res", res);
+            });
         },
 
         chooseFile(data) {

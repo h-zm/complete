@@ -182,7 +182,16 @@ async function startRecord() {
     //获取视频流，这时候会弹出用户选择框，前提用户设备支持
     mediaStream = await navigator.mediaDevices.getDisplayMedia(constants);
 
+    // 监听关闭共享弹窗
+    mediaStream.getVideoTracks()[0].addEventListener('ended', () => {
+        stopRecord()
+    });
+
     console.log("fe-webrtc mediaStream--", mediaStream);
+
+    mediaStream.onremovetrack = (e) => {
+        console.log('停止共享',e)
+    }
 
     if (videoLive) {
         videoLive.srcObject = mediaStream;

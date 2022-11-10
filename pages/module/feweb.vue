@@ -37,7 +37,7 @@ import {
     stopRecord,
     download,
     getBlobData
-} from "fe-webrtc";
+} from "~/plugins/fewebrtc-source";
 import http from "axios";
 export default {
     head() {

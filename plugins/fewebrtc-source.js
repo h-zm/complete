@@ -19,6 +19,14 @@ var startTime = 0;
 // 录制倒计时
 var recordTimer = null;
 
+// 录制时长
+var recordTimes = "00:00";
+
+// 录制样式变化的倒计时
+var btnTimeout = null;
+
+var recordTimes = "00:00";
+
 //保存整段视频数据
 var chunks = [];
 
@@ -44,6 +52,9 @@ var countdown = null;
 
 // 录制
 var countTime = 0;
+
+// 悬浮样式
+var swtich = false;
 
 // 视频下载方式 一次性下载 one 间隔下载 more
 var recordType;
@@ -182,16 +193,12 @@ async function startRecord() {
     //获取视频流，这时候会弹出用户选择框，前提用户设备支持
     mediaStream = await navigator.mediaDevices.getDisplayMedia(constants);
 
-    // 监听关闭共享弹窗
-    mediaStream.getVideoTracks()[0].addEventListener('ended', () => {
-        stopRecord()
+    // 监听通过关闭共享弹窗时停止计时记录
+    mediaStream.getVideoTracks()[0].addEventListener("ended", () => {
+        stopRecord();
     });
 
     console.log("fe-webrtc mediaStream--", mediaStream);
-
-    mediaStream.onremovetrack = (e) => {
-        console.log('停止共享',e)
-    }
 
     if (videoLive) {
         videoLive.srcObject = mediaStream;
@@ -231,6 +238,9 @@ async function startRecord() {
 
     startTime = new Date().valueOf();
 
+    pickDown()
+
+    // 及时更新
     recordTimer = setInterval(() => {
         setTimeHtml();
     }, 1000);
@@ -264,8 +274,13 @@ function stopRecord() {
 
     if (recordWhole && recordWhole.state !== "inactive") {
         recordWhole.stop();
-        console.log("fe-webrtc stop--", judgeTime());
     }
+
+    console.log("fe-webrtc stop--", recordTimes);
+
+    pickUp()
+
+    startTime = 0;
 
     // 初始化计时器
     setTimeHtml("00:00");
@@ -307,6 +322,7 @@ function reset() {
     recordWhole = null;
     mediaStream = null;
     startTime = 0;
+    recordTimes = "00:00";
     chunks = [];
     partChunks = [];
 }
@@ -323,6 +339,11 @@ function clearCurrentInterval() {
     if (recordTimer) {
         clearInterval(recordTimer);
         recordTimer = null;
+    }
+
+    if (btnTimeout) {
+        clearTimeout(btnTimeout);
+        btnTimeout = null
     }
 }
 
@@ -410,7 +431,7 @@ function judgeTime() {
     }
 
     // 获取秒差值
-    // var secondTime = (new Date().valueOf() - startTime) / 1000 + 600.789;
+    // var secondTime = (new Date().valueOf() - startTime) / 1000 + 3590;
     var secondTime = parseInt((new Date().valueOf() - startTime) / 1000);
     // 分
     var minuteTime = 0;
@@ -459,6 +480,7 @@ function judgeTime() {
 function setTimeHtml(data = "") {
     let timeEle = document.querySelector(".fetab__block_timing");
     let temp = data || judgeTime();
+    recordTimes = temp;
     // innerHTML 是推入模版字符串 或是 文本
     timeEle.innerHTML = temp;
 }
@@ -478,24 +500,24 @@ function render() {
         class: "fetab__block",
         child: [timing],
         style:
-            "/* 布局 */margin: 0 0 4px 0;width:100%;font-size: 14px;display: flex;align-items: center;justify-content: center;"
+            "/* 布局 */width:100%;font-size: 14px;display: flex;align-items: center;justify-content: center;"
     });
 
     // 下模块
     const contentBtn = createElement("div", {
-        class: "fetab__block",
+        class: "fetab__btn",
         style:
-            "/* 布局 */display: flex;align-items: center;justify-content: center;"
+            "/* 布局 */height:24px;line-height:24px;display: flex;align-items: center;justify-content: center;transition: .3s all ease;overflow:hidden;"
     });
 
     // 展示按钮区域
-    let btnList = ["共享屏幕", "下载切片", "下载整片", "结束共享"];
+    let btnList = ["开始共享", "下载切片", "下载整片", "结束共享"];
     for (let i = 0; i < btnList.length; i++) {
         let element = createElement("div", {
-            class: "fetab__block_item",
+            class: "fetab__btn_item",
             text: btnList[i],
             style:
-                "padding: 6px 10px;cursor: pointer;border-radius:6px;transition: .2s all ease",
+                "padding: 0 8px;cursor: pointer;border-radius:6px;transition: .3s all ease-in",
 
             mouseover: function() {
                 // 设置悬浮时的背景色
@@ -509,7 +531,7 @@ function render() {
 
         // 绑定事件
         switch (btnList[i]) {
-            case "共享屏幕":
+            case "开始共享":
                 element.onclick = startRecord;
                 break;
             case "下载切片":
@@ -531,7 +553,10 @@ function render() {
         class: "fetab",
         child: [timeBlock, contentBtn],
         style:
-            "position: fixed;top: 28px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 8px 10px;width: fit-content;background: #fff;border: 1px solid #f5f5f5;border-radius: 16px;box-shadow: 0px 6px 8px 0px rgba(199, 199, 199, 0.12);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.2s opacity ease;"
+            "position: fixed;top: 0px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 4px 8px;width: fit-content;min-width:60px;background: #fff;border: 1px solid #f5f5f5;border-radius: 0px 0px 12px 12px;box-shadow: 0px 6px 8px 0px rgba(199, 199, 199, 0.16);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.3s opacity ease;",
+
+        mouseenter: pickUp,
+        mouseleave: pickDown
     });
 
     // 加入页面中
@@ -574,15 +599,55 @@ function createElement(tagName, options = "") {
         ele.src = options.src;
     }
 
+    // 鼠标移入
     if (options.mouseover) {
         ele.onmouseover = options.mouseover;
     }
 
+    // 当一个定点设备（通常指鼠标）第一次移动到触发事件元素中的激活区域时，mouseenter 事件在该 Element 中触发。
+    if (options.mouseenter) {
+        ele.onmouseenter = options.mouseenter;
+    }
+
+    // 指点设备（通常是鼠标）的指针移出某个元素时，会触发mouseleave事件。
+    if (options.mouseenter) {
+        ele.onmouseleave = options.mouseleave;
+    }
+
+    // 鼠标移出
     if (options.mouseout) {
         ele.onmouseout = options.mouseout;
     }
 
     return ele;
+}
+
+// 按钮区样式展开
+function pickUp() {
+    if (startTime) {
+        // console.log("记录时鼠标移入组件区域");
+        if (btnTimeout) {
+            clearTimeout(btnTimeout)
+            btnTimeout = null;
+        }
+        let btnArea = document.querySelector(".fetab__btn");
+        btnArea.style.width = 'unset';
+        btnArea.style.height = '24px';
+        btnArea.style.lineHeight = '24px';
+    }
+}
+
+// 按钮区样式收起
+function pickDown() {
+    if (startTime) {
+        // console.log("记录时鼠标移出组件区域");
+        let btnArea = document.querySelector(".fetab__btn");
+        btnTimeout = setTimeout(() => {
+            btnArea.style.width = 0;
+            btnArea.style.height = 0;
+            btnArea.style.lineHeight = 0;
+        }, 3000);
+    }
 }
 
 /**
@@ -613,7 +678,8 @@ function getBlobData() {
         } catch {
             resolve({
                 whole: "",
-                part: ""
+                part: "",
+                wholeTimes: recordTimes
             });
         }
 

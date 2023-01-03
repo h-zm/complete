@@ -2,7 +2,7 @@
     <!-- 数字滚动组件 -->
     <div class="napro">
         <div v-if="showData">{{ numData }}</div>
-        <div class="napro-area">
+        <div class="napro-area" :style="{ 'justify-content': textAlign }">
             <div
                 class="napro-item"
                 :class="{ 'hide-style': !item.show }"
@@ -19,7 +19,11 @@
                         transform: 'translateY(' + item.transformDis + 'px)'
                     }"
                 >
+                    <div v-if="isNaN(item.lastValue)" class="napro-item_num">
+                        {{ item.lastValue }}
+                    </div>
                     <div
+                        v-else
                         class="napro-item_num"
                         v-for="(item, index) in 10"
                         :key="index"
@@ -41,6 +45,12 @@ export default {
         numData: {
             type: Number,
             default: "***"
+        },
+
+        // 数字数字对齐方式 左 'flex-start', 右 'flex-end'
+        textAlign: {
+            type: String,
+            default: "flex-start"
         },
 
         //是否展示传入数值
@@ -82,7 +92,6 @@ export default {
             transList: [
                 {
                     show: true,
-
                     // 随便设置一个随意值
                     lastValue: 0,
                     // 具体的过渡距离
@@ -128,6 +137,8 @@ export default {
             // 转换为字符格式
             let tempValue = JSON.stringify(value);
 
+            // console.log("value", value);
+
             // 增加位列
             if (tempValue.length > this.transList.length) {
                 let i,
@@ -136,6 +147,7 @@ export default {
                 for (let m = 0; m < h; m++) {
                     // 先推入 利用索引差和过渡样式延迟 打开 show
                     this.transList.push(this.resetItem());
+
                     //利用差值判断是否添加分割符号
                     // if ((h - m - 1) % 3 == 0) {
                     //     console.log(`${m}索引位置需要添加分割符号`);
@@ -163,6 +175,7 @@ export default {
                 setTimeout(() => {
                     // 相应的trans项
                     let tempObj = this.transList[i];
+
                     // 根据差值计算具体的过渡距离
                     let transDis = "";
 
@@ -174,16 +187,27 @@ export default {
                     // 或者根据 传入的速度计算过渡时间
                     let transTim = this.setting.speed / 1000;
 
-                    if (Number(tempValue[i]) > tempObj.lastValue) {
-                        transDis =
-                            tempObj.transformDis -
-                            (Number(tempValue[i]) - tempObj.lastValue) *
-                                this.numStyle.height;
+                    tempObj.transition = `${transTim}s all ease-in-out`;
+
+                    if (isNaN(tempValue[i])) {
+                        // 不是数字的先直接赋值就好 如小数点
+                        tempObj.lastValue = tempValue[i];
+                        tempObj.transformDis = 0;
                     } else {
-                        transDis =
-                            tempObj.transformDis +
-                            (tempObj.lastValue - Number(tempValue[i])) *
-                                this.numStyle.height;
+                        if (Number(tempValue[i]) > tempObj.lastValue) {
+                            transDis =
+                                tempObj.transformDis -
+                                (Number(tempValue[i]) - tempObj.lastValue) *
+                                    this.numStyle.height;
+                        } else {
+                            transDis =
+                                tempObj.transformDis +
+                                (tempObj.lastValue - Number(tempValue[i])) *
+                                    this.numStyle.height;
+                        }
+
+                        tempObj.lastValue = Number(tempValue[i]);
+                        tempObj.transformDis = transDis;
                     }
 
                     // console.log(
@@ -193,10 +217,6 @@ export default {
                     //     transTim,
                     //     transDis
                     // );
-
-                    tempObj.transition = `${transTim}s all ease-in-out`;
-                    tempObj.lastValue = Number(tempValue[i]);
-                    tempObj.transformDis = transDis;
                 }, 150 * (i + 1));
             }
 
@@ -212,7 +232,6 @@ export default {
                  *  写在css中了，没有
                  */
                 show: false,
-
                 // 随便设置一个随意值
                 lastValue: tempRandom,
                 // 具体的过渡距离

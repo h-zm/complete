@@ -19,6 +19,7 @@
                         transform: 'translateY(' + item.transformDis + 'px)'
                     }"
                 >
+                    <!-- 特殊处理字符展示 -->
                     <div v-if="isNaN(item.lastValue)" class="napro-item_num">
                         {{ item.lastValue }}
                     </div>

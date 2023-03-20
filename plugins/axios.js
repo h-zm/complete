@@ -13,23 +13,30 @@ export default function({ $axios, store, app, redirect }) {
         switch (config.method) {
             case "post":
                 // headers里的content-Type和Content-Type在请求时都会整合到一起
-                config.headers["content-Type"] =
-                    "application/x-www-form-urlencoded;charset=UTF-8";
-                config.data = qs.stringify(config.data); // 转化为没有"{}"（引号和括号）的键值对
+                // config.headers["content-Type"] =
+                //     "application/json;charset=UTF-8";
+                // "application/x-www-form-urlencoded;charset=UTF-8";
+                // 转化为没有"{}"（引号和括号）的键值对
                 break;
+                // config.data = qs.stringify(config.data); 
+        }
+
+        // 有的接口需要自定义
+        if (config.headers && config.headers["Content-Type"]) {
+            config.headers["content-Type"] = config.headers["Content-Type"];
         }
 
         // 判断是否有传json请求方式 有的需要通过JSON.stringify设置
-        if (
-            config.headers &&
-            config.headers["Content-Type"] == "application/json"
-        ) {
-            config.transformRequest = function(data) {
-                return JSON.stringify(data);
-            };
-        }
+        // if (
+        //     config.headers &&
+        //     config.headers["Content-Type"] == "application/json"
+        // ) {
+        //     config.transformRequest = function(data) {
+        //         return JSON.stringify(data);
+        //     };
+        // }
 
-        console.log(config, "请求参数");
+        // console.log(config, "请求参数");
         return config;
     });
 
@@ -52,5 +59,5 @@ export default function({ $axios, store, app, redirect }) {
     });
 
     // 为返回做统一处理
-    $axios.onResponse(res => {});
+    $axios.onResponse(res => res.data);
 }

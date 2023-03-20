@@ -1,3 +1,5 @@
+const path = require('path');
+
 // 获取视频流信息
 var constants;
 
@@ -13,7 +15,7 @@ var recordWhole;
 //视频流
 var mediaStream;
 
-// 录制开始时间
+// 录制开始时间 
 var startTime = 0;
 
 // 录制倒计时
@@ -495,6 +497,12 @@ function render() {
         text: "00:00"
     });
 
+    const icon = createElement("img", {
+        class: "fetab__block_img",
+        src: path.resolve(__dirname,'./action.png'),
+        style: "width:24px;height:24px"
+    });
+
     // 上模块
     const timeBlock = createElement("div", {
         class: "fetab__block",
@@ -551,7 +559,7 @@ function render() {
     // 主元素
     content = createElement("div", {
         class: "fetab",
-        child: [timeBlock, contentBtn],
+        child: [timeBlock, icon,contentBtn],
         style:
             "position: fixed;top: 0px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 4px 8px;width: fit-content;min-width:60px;background: #fff;border: 1px solid #f5f5f5;border-radius: 0px 0px 12px 12px;box-shadow: 0px 6px 8px 0px rgba(199, 199, 199, 0.16);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.3s opacity ease;",
 
@@ -568,59 +576,7 @@ function render() {
     }
 }
 
-// 创建元素
-function createElement(tagName, options = "") {
-    let ele = document.createElement(tagName);
 
-    // 文本内容
-    if (options.text) {
-        ele.innerHTML = options.text;
-    }
-
-    // 节点内容
-    if (options.child) {
-        ele.append(...options.child);
-    }
-
-    // 类名
-    if (options.class) {
-        ele.className = options.class;
-    }
-
-    // 具体样式
-    if (options.style) {
-        // for (let i in options.style) {
-        //     ele.style[i] = options.style[i];
-        // }
-        ele.style.cssText = options.style;
-    }
-
-    if (options.src) {
-        ele.src = options.src;
-    }
-
-    // 鼠标移入
-    if (options.mouseover) {
-        ele.onmouseover = options.mouseover;
-    }
-
-    // 当一个定点设备（通常指鼠标）第一次移动到触发事件元素中的激活区域时，mouseenter 事件在该 Element 中触发。
-    if (options.mouseenter) {
-        ele.onmouseenter = options.mouseenter;
-    }
-
-    // 指点设备（通常是鼠标）的指针移出某个元素时，会触发mouseleave事件。
-    if (options.mouseenter) {
-        ele.onmouseleave = options.mouseleave;
-    }
-
-    // 鼠标移出
-    if (options.mouseout) {
-        ele.onmouseout = options.mouseout;
-    }
-
-    return ele;
-}
 
 // 按钮区样式展开
 function pickUp() {
@@ -685,6 +641,60 @@ function getBlobData() {
 
         console.log("fewebrtc backData--");
     });
+}
+
+// 创建元素
+function createElement(tagName, options = "") {
+    let ele = document.createElement(tagName);
+
+    // 文本内容
+    if (options.text) {
+        ele.innerHTML = options.text;
+    }
+
+    // 节点内容
+    if (options.child) {
+        ele.append(...options.child);
+    }
+
+    // 类名
+    if (options.class) {
+        ele.className = options.class;
+    }
+
+    // 具体样式
+    if (options.style) {
+        // for (let i in options.style) {
+        //     ele.style[i] = options.style[i];
+        // }
+        ele.style.cssText = options.style;
+    }
+
+    if (options.src) {
+        ele.src = options.src;
+    }
+
+    // 鼠标移入
+    if (options.mouseover) {
+        ele.onmouseover = options.mouseover;
+    }
+
+    // 当一个定点设备（通常指鼠标）第一次移动到触发事件元素中的激活区域时，mouseenter 事件在该 Element 中触发。
+    if (options.mouseenter) {
+        ele.onmouseenter = options.mouseenter;
+    }
+
+    // 指点设备（通常是鼠标）的指针移出某个元素时，会触发mouseleave事件。
+    if (options.mouseenter) {
+        ele.onmouseleave = options.mouseleave;
+    }
+
+    // 鼠标移出
+    if (options.mouseout) {
+        ele.onmouseout = options.mouseout;
+    }
+
+    return ele;
 }
 
 module.exports = {

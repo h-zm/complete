@@ -48,6 +48,7 @@ export default {
         drawCanvas() {
             console.log("--执行画图--");
             const canvasA = document.getElementById("firstCanvas"); // 使用getElementById获取HTML<canvas>元素的引用
+            // const canvasA = document.createElement("canvas"); // 使用getElementById获取HTML<canvas>元素的引用
             if (!canvasA.getContext) {
                 console.log("当前不支持canvas渲染");
                 return;
@@ -60,6 +61,7 @@ export default {
             //
             ctxA.clearRect(45, 45, 60, 60); // 清除指定矩形区域，让清除部分完全透明
             console.info(ctxA, "ctxA可调用的Api");
+            // document.body.appendChild(canvasA);
         },
         drawCanvasSecond() {
             console.log("--执行第二画图--");

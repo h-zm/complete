@@ -32,14 +32,29 @@
 </template>
 
 <script>
+import http from "axios";
 import {
     init,
     startRecord,
     stopRecord,
     download,
     getBlobData
-} from "~/plugins/fewebrtc-source";
-import http from "axios";
+} from "fe-webrtc";
+
+// 是服务端渲染
+if (process.server) {
+    console.log("is server");
+} else {
+    console.log("is client");
+}
+
+// 是否 nuxt generator 运行
+if (process.static) {
+    console.log("is nuxt generator");
+} else {
+    console.log("no nuxt generator");
+}
+
 export default {
     head() {
         return {
@@ -55,6 +70,12 @@ export default {
     },
     mounted() {
         init();
+        // 是否 nuxt generator 运行
+        if (process.static) {
+            console.log("page: is nuxt generator");
+        } else {
+            console.log("page: no nuxt generator");
+        }
     },
     methods: {
         handleButton(type) {

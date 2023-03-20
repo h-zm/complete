@@ -3792,10 +3792,10 @@
   dependencies:
     "reusify" "^1.0.4"
 
-"fe-webrtc@file:fe-webrtc-1.0.3.tgz":
-  "integrity" "sha512-v1xN7PjXwQYCfXEZ+SHb/c/65cdyvYHEEHkYRfIe8IGq5IWyaWb7oLgwtN1YZ5bKdJVzDiwyrryDz9Ozw4tEHg=="
-  "resolved" "file:fe-webrtc-1.0.3.tgz"
-  "version" "1.0.3"
+"fe-webrtc@file:fe-webrtc-1.0.5.tgz":
+  "integrity" "sha512-18hXF92Pf2sVACpot52ZsqjAvk2K4BDNU9u+TKpbqUTqik1/Y8+Fv3TEWenFuEwzwpZujV/tJZSGGn3BpMnNLw=="
+  "resolved" "file:fe-webrtc-1.0.5.tgz"
+  "version" "1.0.5"
   dependencies:
     "clean-webpack-plugin" "^4.0.0"
 

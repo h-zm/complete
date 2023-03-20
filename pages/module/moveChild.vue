@@ -53,6 +53,28 @@
                     </div>
                 </transition-group>
             </div>
+
+            <div>
+                3. 通过 dragenter 手写 transform 实现平滑过度
+                <div @dragleave="transLeave">
+                    <div
+                        class="moving-area-item moving-area-trans"
+                        v-for="(item, index) in transList"
+                        :id="item.name"
+                        :key="item.id"
+                        :style="{
+                            transform: 'translateY(' + item.trans + 'px)',
+                            zIndex: item.id + 1
+                        }"
+                        draggable="true"
+                        @dragstart="transStart(item, index, $event)"
+                        @dragover="transOver(item, index, $event)"
+                        @dragenter="transEnter(item, index, $event)"
+                    >
+                        {{ item.name }} {{ item.id }} {{ item.index }}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -86,13 +108,23 @@ export default {
                 { name: "E", id: 5, choose: false },
                 { name: "F", id: 6, choose: false }
             ],
+            handleDrag: null,
 
-            handleDrag: null
+            transList: [
+                { name: "transA", id: 1, choose: false, index: 0, trans: 0 },
+                { name: "transB", id: 2, choose: false, index: 1, trans: 0 },
+                { name: "transC", id: 3, choose: false, index: 2, trans: 0 },
+                { name: "transD", id: 4, choose: false, index: 3, trans: 0 },
+                { name: "transE", id: 5, choose: false, index: 4, trans: 0 },
+                { name: "transF", id: 6, choose: false, index: 5, trans: 0 }
+            ],
+            transElement: null
         };
     },
     mounted() {},
     beforeDestroy() {},
     methods: {
+        // 1
         // 移动对象 开始移动触发
         dragStart(item, index, e) {
             // 设置移动对象的id
@@ -115,19 +147,19 @@ export default {
             e.preventDefault();
             let target = e.target;
             let { nodeName } = target; // 节点
-            console.log(`移出`, target.id);
+            // console.log(`移出`, target.id);
         },
 
         // 移动项目 结束移动触发 输出拖动元素结束时的位置
         dragEnd(item, index, e) {
             e.preventDefault();
-            console.log(`放置项目索引值是${index},内容是%o`, e);
+            // console.log(`放置项目索引值是${index},内容是%o`, e);
         },
 
         //移动完毕 放置的位置
         handleDrop(e) {
             e.preventDefault();
-            console.log(`移动完毕`, e);
+            // console.log(`移动完毕`, e);
             // 改变节点的值
             let temp = null;
             // 到达元素
@@ -147,11 +179,12 @@ export default {
             fromElement.innerHTML = toElement.innerHTML;
             toElement.innerHTML = temp;
 
-            console.log(this.dataList, "数据结构有变化吗?");
+            // console.log(this.dataList, "数据结构有变化吗?");
 
             // console.log(toElement, "结束时的对象");
         },
 
+        // 2
         // 平滑所需使用到的方法
         handleStart(item, index, e) {
             this.handleDrag = {
@@ -178,6 +211,59 @@ export default {
         },
         handleEnd(item, index, e) {
             this.handleDrag = null;
+        },
+
+        // 3
+        // 移动对象 开始移动触发
+        transStart(item, index, e) {
+            // 设置移动对象的id
+            e.dataTransfer.setData("text/plain", item.name);
+            // console.log(`移动项目索引值是${index},内容是%o`, item);
+            this.transElement = item;
+        },
+
+        // 移入 当前输出的还是拖动元素的信息
+        transOver(item, index, e) {
+            e.preventDefault();
+            let target = e.target;
+            let { nodeName } = target; // 节点
+            // console.log(e.y, e.x, `拖拉元素${item.name}y,x的坐标变化`);
+            // console.log(`移入`, target.id);
+        },
+
+        transEnter(item, index, e) {
+            if (this.transElement.id !== item.id) {
+                // console.log("交换对象.", this.transElement.id, item.id);
+                let tempValue = JSON.parse(
+                    JSON.stringify(this.transElement.index)
+                );
+                // 先移动再赋值 42
+                if (this.transElement.index > item.index) {
+                    console.log("移入比自己大的");
+                    this.transElement.trans += -42;
+                    item.trans += 42;
+                } else {
+                    console.log("移入比自己小的");
+                    this.transElement.trans += 42;
+                    item.trans += -42;
+                }
+                this.transElement.index = item.index;
+                item.index = tempValue;
+            }
+        },
+
+        // 移出
+        transLeave(e) {
+            e.preventDefault();
+            let target = e.target;
+            let { nodeName } = target; // 节点
+            // console.log(`移出`, target.id);
+        },
+
+        // 移动项目 结束移动触发 输出拖动元素结束时的位置
+        transEnd(item, index, e) {
+            e.preventDefault();
+            // console.log(`放置项目索引值是${index},内容是%o`, e);
         }
     }
 };
@@ -195,7 +281,7 @@ export default {
         position: relative;
 
         &-item {
-            width: 80px;
+            width: 100px;
             height: 32px;
             line-height: 32px;
             background: #fff;
@@ -205,6 +291,10 @@ export default {
             margin: 10px;
             transition: all linear 0.2s;
             .pointer(move);
+        }
+
+        &-trans {
+            position: relative;
         }
     }
 

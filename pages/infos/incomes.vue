@@ -13,9 +13,10 @@
                 >
                 </el-date-picker>
             </div>
-            <el-button type="primary" @click="getList()"
-                >查 询</el-button
+            <el-button type="primary" @click="handleItem('add')"
+                >新 增</el-button
             >
+            <el-button type="primary" @click="getList()">查 询</el-button>
         </div>
         <div class="income__main">
             <el-table :data="dataList" style="width: 100%">
@@ -28,8 +29,57 @@
                 <el-table-column prop="aftertax" label="税后">
                 </el-table-column>
                 <el-table-column prop="备注" label="descrip"> </el-table-column>
+                <el-table-column prop="操作" label="descrip">
+                    <template slot-scope="scope">
+                        <el-button
+                            type="primary"
+                            @click="handleItem('update', scope)"
+                            >修改</el-button
+                        >
+                        <el-button
+                            type="danger"
+                            @click="handleItem('del', scope)"
+                            >删除</el-button
+                        >
+                    </template>
+                </el-table-column>
             </el-table>
         </div>
+        <el-dialog
+            title="提示"
+            :visible.sync="dialogVisible"
+            width="30%"
+            :before-close="handleClose"
+        >
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="发资年月">
+                    <el-date-picker
+                        v-model="formData.name"
+                        type="month"
+                        placeholder="选择月"
+                    >
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item label="发资公司">
+                    <el-input v-model="formData.company"></el-input>
+                </el-form-item>
+                <el-form-item label="税前">
+                    <el-input v-model="formData.pretax"></el-input>
+                </el-form-item>
+                <el-form-item label="税后">
+                    <el-input v-model="formData.aftertax"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="formData.descrip"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="dialogVisible = false"
+                    >确 定</el-button
+                >
+            </span>
+        </el-dialog>
         <el-pagination
             background
             layout="prev, pager, next"
@@ -52,6 +102,14 @@ export default {
                 pageNum: 1,
                 total: 0
             },
+            formData: {
+                name: "",
+                company: "北京东方国信",
+                pretax: "",
+                aftertax: "",
+                descrip: ""
+            },
+            dialogVisible: false,
             query: {
                 year: ""
             }
@@ -62,35 +120,37 @@ export default {
     },
     methods: {
         getList(type = "reset") {
-            if (type === 'reset') {
-                this.pagenationInfo.pageNum = 1
+            if (type === "reset") {
+                this.pagenationInfo.pageNum = 1;
             }
             this.$axios
                 .post("http://localhost:5678/getSalarys", {
-                    year: this.query.year ? new Date(this.query.year).getFullYear() : '',
+                    year: this.query.year
+                        ? new Date(this.query.year).getFullYear()
+                        : "",
                     pageNum: this.pagenationInfo.pageNum,
                     pageSize: this.pagenationInfo.pageSize
                 })
                 .then(res => {
                     if (res.code === 1000) {
                         this.dataList = res.data.list;
-                        this.pagenationInfo.total = res.data.total
+                        this.pagenationInfo.total = res.data.total;
                     } else {
                         this.dataList = [];
-                        this.pagenationInfo.total = 0
+                        this.pagenationInfo.total = 0;
                     }
                 });
         },
 
         // 年份筛选器变化
         changeYear(data) {
-            console.log('所选年份',data)
+            console.log("所选年份", data);
         },
 
         // 页码变化
         handleChange(item) {
             this.pagenationInfo.pageNum = item;
-            this.getList('load')
+            this.getList("load");
         }
     }
 };

@@ -13,7 +13,7 @@
                 >
                 </el-date-picker>
             </div>
-            <el-button type="primary" @click="handleItem('add')"
+            <el-button type="success" @click="handleItem('add')"
                 >新 增</el-button
             >
             <el-button type="primary" @click="getList()">查 询</el-button>
@@ -25,20 +25,23 @@
                 </el-table-column>
                 <el-table-column prop="company" label="发资公司">
                 </el-table-column>
-                <el-table-column prop="pretax" label="税前"> </el-table-column>
-                <el-table-column prop="aftertax" label="税后">
+                <el-table-column prop="pretax" label="税前" type="number">
                 </el-table-column>
-                <el-table-column prop="备注" label="descrip"> </el-table-column>
-                <el-table-column prop="操作" label="descrip">
+                <el-table-column prop="aftertax" label="税后" type="number">
+                </el-table-column>
+                <el-table-column prop="descrip" label="备注"> </el-table-column>
+                <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button
                             type="primary"
-                            @click="handleItem('update', scope)"
+                            size="mini"
+                            @click="handleItem('update', scope.row)"
                             >修改</el-button
                         >
                         <el-button
                             type="danger"
-                            @click="handleItem('del', scope)"
+                            size="mini"
+                            @click="handleItem('del', scope.row)"
                             >删除</el-button
                         >
                     </template>
@@ -48,41 +51,56 @@
         <el-dialog
             title="提示"
             :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose"
+            width="40%"
+            :before-close="handleDialog"
         >
-            <el-form ref="form" :model="form" label-width="80px">
+            <el-form ref="form" label-width="100px">
                 <el-form-item label="发资年月">
                     <el-date-picker
+                        class="income__input"
                         v-model="formData.name"
+                        format="yyyy-MM"
+                        value-format="yyyy-MM"
                         type="month"
                         placeholder="选择月"
                     >
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item label="发资公司">
-                    <el-input v-model="formData.company"></el-input>
+                    <el-input
+                        class="income__input"
+                        v-model="formData.company"
+                    ></el-input>
                 </el-form-item>
                 <el-form-item label="税前">
-                    <el-input v-model="formData.pretax"></el-input>
+                    <el-input
+                        class="income__input"
+                        v-model="formData.pretax"
+                    ></el-input>
                 </el-form-item>
                 <el-form-item label="税后">
-                    <el-input v-model="formData.aftertax"></el-input>
+                    <el-input
+                        class="income__input"
+                        v-model="formData.aftertax"
+                    ></el-input>
                 </el-form-item>
                 <el-form-item label="备注">
-                    <el-input v-model="formData.descrip"></el-input>
+                    <el-input
+                        class="income__input"
+                        v-model="formData.descrip"
+                    ></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="dialogVisible = false"
+                <el-button @click="handleDialog()">取 消</el-button>
+                <el-button type="primary" @click="handleDialog('sure')"
                     >确 定</el-button
                 >
             </span>
         </el-dialog>
         <el-pagination
             background
-            layout="prev, pager, next"
+            layout="total, prev, pager, next"
             :total="pagenationInfo.total"
             :page-size="pagenationInfo.pageSize"
             :current-page="pagenationInfo.pageNum"
@@ -98,12 +116,14 @@ export default {
         return {
             dataList: [],
             pagenationInfo: {
-                pageSize: 10,
+                pageSize: 18,
                 pageNum: 1,
                 total: 0
             },
+            eventType: "add",
             formData: {
                 name: "",
+                id: "",
                 company: "北京东方国信",
                 pretax: "",
                 aftertax: "",
@@ -151,6 +171,109 @@ export default {
         handleChange(item) {
             this.pagenationInfo.pageNum = item;
             this.getList("load");
+        },
+
+        // 重置数据
+        resetData() {
+            for (let i in this.formData) {
+                if (i === "company") {
+                    this.formData[i] = "北京东方国信";
+                } else {
+                    this.formData[i] = "";
+                }
+            }
+        },
+
+        // 删除/新增等
+        handleItem(type = "add", item = "") {
+            console.log("点击项目", item);
+            this.eventType = type;
+            switch (type) {
+                case "del":
+                    this.$confirm(
+                        "此操作将永久删除该条信息, 是否继续?",
+                        "提示",
+                        {
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning"
+                        }
+                    )
+                        .then(() => {
+                            this.$axios
+                                .get(
+                                    `http://localhost:5678/deleteSalarys/${item.id}`
+                                )
+                                .then(res => {
+                                    if (res.code === 1000) {
+                                        this.$message.success("删除成功~");
+                                        this.getList();
+                                        this.dialogVisible = false;
+                                    } else {
+                                        this.$message.error(res.msg);
+                                    }
+                                });
+                        })
+                        .catch(() => {
+                            this.$message({
+                                type: "info",
+                                message: "已取消删除"
+                            });
+                        });
+                    break;
+                case "update":
+                    for (let i in item) {
+                        this.formData[i] = item[i];
+                    }
+                    this.dialogVisible = true;
+                    break;
+                default:
+                    this.resetData();
+                    this.dialogVisible = true;
+                    break;
+            }
+        },
+
+        // 弹窗回调
+        handleDialog(type = "close") {
+            if (type === "sure") {
+                console.log("当前表单", this.formData);
+                if (this.eventType == "add") {
+                    let form = Object.assign(this.formData, {
+                        pretax: Number(this.formData.pretax),
+                        aftertax: Number(this.formData.aftertax)
+                    });
+                    this.$axios
+                        .post("http://localhost:5678/addSalarys", form)
+                        .then(res => {
+                            if (res.code === 1000) {
+                                this.$message.success("新建成功~");
+                                this.getList();
+                                this.dialogVisible = false;
+                            } else {
+                                this.$message.error(res.msg);
+                            }
+                        });
+                } else {
+                    let form = Object.assign(this.formData, {
+                        pretax: Number(this.formData.pretax),
+                        aftertax: Number(this.formData.aftertax)
+                    });
+                    this.$axios
+                        .post("http://localhost:5678/updateSalarys", form)
+                        .then(res => {
+                            if (res.code === 1000) {
+                                this.$message.success("编辑成功~");
+                                this.getList("load");
+                                this.dialogVisible = false;
+                            } else {
+                                this.$message.error(res.msg);
+                            }
+                        });
+                }
+            } else {
+                this.dialogVisible = false;
+            }
         }
     }
 };
@@ -177,6 +300,10 @@ export default {
 
     &__main {
         margin: 0 0 12px 0;
+    }
+
+    &__input {
+        width: 300px;
     }
 }
 </style>

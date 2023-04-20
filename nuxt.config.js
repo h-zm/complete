@@ -76,7 +76,10 @@ export default {
 
     // 为页面注入全局的less变量可以使用@nuxtjs/style-resources 来实现
     styleResources: {
-        less: "@/assets/less/index.less"
+        // 单个写法
+        // less: "@/assets/less/index.less"
+        // 数组写法
+        less: ["@/assets/less/index.less"]
     },
 
     proxy: {

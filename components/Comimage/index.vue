@@ -172,7 +172,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .comp-async {
     padding: 8px;
     width: 248px;

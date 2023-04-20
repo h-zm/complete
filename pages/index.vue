@@ -89,7 +89,7 @@ export default {
 /* lang="less" scoped
   使用以上属性需要引入依赖
 */
-@import "~assets/less/index.less";
+
 .container {
     margin: 0 auto;
     display: flex;

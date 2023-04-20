@@ -35,7 +35,10 @@ export default {
     /*
      ** Global CSS
      */
-    css: ["element-ui/lib/theme-chalk/index.css", "assets/css/transition.css"],
+    css: [
+        "element-ui/lib/theme-chalk/index.css",
+        "@/assets/css/transition.css"
+    ],
     /*
      ** Plugins to load before mounting the App
      */
@@ -59,15 +62,21 @@ export default {
          */
     ],
     /*
-     ** Nuxt.js dev-modules
+     ** Nuxt.js build-modules
      */
     buildModules: [],
     /*
      ** Nuxt.js modules
      */
-    modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+    modules: ["@nuxtjs/axios", "@nuxtjs/proxy", "@nuxtjs/style-resources"],
+
     axios: {
         proxy: true
+    },
+
+    // 为页面注入全局的less变量可以使用@nuxtjs/style-resources 来实现
+    styleResources: {
+        less: "@/assets/less/index.less"
     },
 
     proxy: {

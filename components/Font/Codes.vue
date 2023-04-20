@@ -29,7 +29,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~assets/less/index.less";
 .code-basic {
     border: 1px solid #ddd;
     padding: 0 4px;

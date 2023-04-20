@@ -41,7 +41,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .tip-area {
     background: @color28292a;
     font-size: 14px;

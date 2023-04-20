@@ -75,7 +75,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .scroll {
     &__section {
         margin: 0 0 20px 0;

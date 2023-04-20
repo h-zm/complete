@@ -280,7 +280,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .income {
     &__head {
         margin: 0 0 10px 0;

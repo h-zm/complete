@@ -655,7 +655,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~assets/less/index.less";
 .example {
     .moving-area {
         padding: 20px;

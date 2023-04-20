@@ -29,7 +29,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import "~assets/less/index.less";
 .font-basic {
     padding: 0 2px;
 }

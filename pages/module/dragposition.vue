@@ -83,12 +83,12 @@ export default {
         // 重置
         resetFunc() {
             // location.reload();
-            // 
+            //
             document.getElementById("beginarea").appendChild(dragElement);
             // // 添加选中样式
             drogElement.classList.remove("droped");
             drogElement.classList.remove("drogover");
-            console.log('drogElement SHUJU',drogElement.classList)
+            console.log("drogElement SHUJU", drogElement.classList);
         },
         // 拖拽事件
         dragFunc(e) {
@@ -122,7 +122,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .example {
     width: 100%;
     height: 100%;

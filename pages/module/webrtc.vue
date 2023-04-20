@@ -511,7 +511,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .page {
     &__area {
         width: 100%;

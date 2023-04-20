@@ -55,7 +55,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .qrpage {
     &-main {
         border: 1px solid #000;

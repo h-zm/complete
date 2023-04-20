@@ -65,7 +65,6 @@ export default {
 </script>
 
 <style lang="less">
-@import "~assets/less/index.less";
 .label {
 }
 </style>

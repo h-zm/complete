@@ -67,12 +67,16 @@ export function getZindex() {
 // 防抖 在一段时间内同时触发相同函数只执行一次
 export function _debounce(fn, delay) {
     // var number = 0;
+    // 这里的声明只有在首次声明时执行，一般执行在服务端。之后页面中交互时触发防抖
+    // 只会走return里返回的逻辑
     var delay = delay || 1000;
     var timer = null;
+    // console.log("终端timer1", timer);
     return function() {
         var _this = this; // 供后续_this转向使用
         var arg = arguments;
         // console.log(timer, number, '函数再次被触发');
+        // console.log("timer2", timer);
         if (timer !== null) {
             // number++;
             clearTimeout(timer);

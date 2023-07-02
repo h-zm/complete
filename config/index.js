@@ -1,4 +1,4 @@
-var version = "1.0.17";
+var version = "1.0.18";
 let baseUrl = "";
 let processInfo = process;
 // process 不一定能打印出来 但是可以通过判定进行设置

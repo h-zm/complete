@@ -22,6 +22,11 @@
                 <NumberAni :numData="operateNum"></NumberAni>
             </div>
         </div>
+
+        <div class="scroll__section">
+            3. 数字千位符
+            {{ diviNumber }}
+        </div>
     </div>
 </template>
 
@@ -37,7 +42,9 @@ export default {
             varietyNum: 0,
 
             // 操作的数字
-            operateNum: 998
+            operateNum: 998,
+
+            diviNumber: 1000000000
         };
     },
     mounted() {
@@ -55,6 +62,8 @@ export default {
             this.timer = setInterval(() => {
                 this.varietyNum = parseInt(Math.random() * 10000000000);
             }, 3000);
+
+            this.handleSeparator(this.diviNumber);
         },
 
         addValue(type) {
@@ -69,6 +78,33 @@ export default {
                     this.operateNum = 109;
                     break;
             }
+        },
+
+        handleSeparator(data = 0, speara = ",") {
+            if (isNaN(data)) {
+                return "";
+            }
+
+            let tempList = String(data)
+                .split("")
+                .reverse();
+
+            let resultList = [];
+
+            let startIndex = 3;
+
+            while (startIndex < tempList.length) {
+                resultList.push(startIndex);
+                startIndex += 3;
+            }
+
+            // 要往后推入一位所以是3开始
+            resultList.forEach((it, index) => {
+                tempList.splice(it + index, 0, speara);
+            });
+
+            console.log("resultList", resultList);
+            this.diviNumber = tempList.reverse().join("");
         }
     }
 };

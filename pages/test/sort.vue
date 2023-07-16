@@ -1,9 +1,11 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="hover">
-        <div v-for="(it, index) in originList">
+        <div v-for="(it, index) in originList" :key="index">
             <div>
-                {{ formatterDate(it.pushTime) }}， 工号：{{ it.workOrderCode }}
+                {{ index + 1 }}、{{ formatterDate(it.pushTime) }}， 工号：{{
+                    it.workOrderCode
+                }}
             </div>
             <div>{{ it.content }}</div>
         </div>
@@ -631,67 +633,84 @@ export default {
 
             return new Date(data).toLocaleTimeString();
         },
+
         initData() {
-            // *法一
-            // 如果工号是逐级递增的 先按照工单号升序排，相同工单号再按照时间升序排
-            // this.originList.sort((a, b) => {
-            //     if (a.workOrderCode === b.workOrderCode) {
-            //         return a.pushTime - b.pushTime;
-            //     } else {
-            //         return a.workOrderCode - b.workOrderCode;
-            //     }
-            // });
-
-            // console.log("originList", this.originList);
-
-            // *法二
-            // 再按照workOrderCode一样的靠拢
-
-            let loopFunc = function(data, target, curIndex = 0) {
-                console.log("start", target.workOrderCode, target.pushTime);
-                data.forEach((item, index) => {
-                    // 相邻
-                    let tempV = { ...item };
-                    if (item.workOrderCode === target.workOrderCode) {
-                        if (item.pushTime < target.pushTime) {
-                            data[index] = { ...target };
-                            data[curIndex] = tempV;
-                            curIndex = index;
-                            console.log("时间大小换位置", index);
-                        }
-                    } else if (
-                        Number(item.workOrderCode) <
-                        Number(target.workOrderCode)
-                    ) {
-                        data[index] = { ...target };
-                        data[curIndex] = tempV;
-                        curIndex = index;
-                        console.log("工号换位置", index);
-                    }
-                });
-            };
-
             let elements = new Set(
                 this.originList.map(item => item.workOrderCode)
             );
 
             console.log(`共有${elements.size}种workorderCode类型`);
 
+            // *法一
+            // 如果工号是逐级递增的 先按照工单号升序排，相同工单号再按照时间升序排
+            // this.originList.sort((a, b) => {
+            //     console.log(a.id);
+            //     if (a.workOrderCode === b.workOrderCode) {
+            //         return a.pushTime - b.pushTime;
+            //     } else {
+            //         return a.workOrderCode - b.workOrderCode;
+            //     }
+            // });
+            console.log("originList", this.originList);
+
+            // *法二
+            // 理解sort函数原理
+            // 比较函数
+            let compareValue = function(a, b) {
+                // 返回true按照倒叙 返回false升序
+                // if (a.workOrderCode === b.workOrderCode) {
+                //     return a.pushTime - b.pushTime;
+                // } else {
+                //     return a.workOrderCode - b.workOrderCode;
+                // }
+                return a - b;
+            };
+
+            let sortType = null;
+
+            let loopFunc = function(data, handleFunc = () => {}) {
+                let length = data?.length - 1;
+                console.log("handleFunc", handleFunc);
+                // 因为有i+1,所以取到倒数第二个索引就行
+                for (let i = 0; i < length; i++) {
+                    let a = JSON.parse(JSON.stringify(data[i]));
+                    let b = JSON.parse(JSON.stringify(data[i + 1]));
+
+                    let result = handleFunc(a, b);
+
+                    if (sortType == null) {
+                        // sortType 为 true 降序
+                        // 为 false 升序
+                        sortType = !!result;
+                        console.log("sortType", sortType);
+                    }
+
+                    if (sortType && result > 0) {
+                        // 排列为升序 但是 a大于b需要啊调整顺序
+                        data.splice(i + 1 + 1, 0, a);
+                        data.splice(i, 1);
+                    } else if (!sortType && sortType < 0) {
+                        // 排列为降序 但是 a小于b需要调整顺序
+                        data.splice(i, 1);
+                        data.splice(i - 1, 0, a);
+                    }
+                    // 俩个一样 不处理
+                }
+            };
+
             let startIndex = 0;
-            let compareObject = "";
-            let tempList = [...this.originList];
+            // let tempList = [...this.originList];
+            let tempList = [1, 9, 3, 4, 2, 1];
 
             while (startIndex < tempList.length) {
-                compareObject = tempList[startIndex];
+                loopFunc(tempList, compareValue);
 
-                loopFunc(tempList, compareObject);
-
-                if (tempList[startIndex].id === compareObject.id) {
-                    startIndex++;
-                }
+                startIndex++;
             }
 
-            console.log("originList", tempList);
+            // this.originList = [...tempList];
+
+            console.log("tempList", tempList);
         }
     }
 };

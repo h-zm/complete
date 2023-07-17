@@ -126,7 +126,7 @@ export function handleSort(data, handleFunc = () => {}) {
             let result = handleFunc(a, b);
 
             if (sortType == null) {
-                // 期望最后的排序结果 sortType
+                // 用户期望最后的排序结果 sortType
                 // 为 true 降序
                 // 为 false 升序
                 sortType = !!result;

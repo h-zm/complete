@@ -95,9 +95,6 @@ export default {
 </script>
 
 <style lang="less">
-.change {
-    padding: 12px;
-}
 .test-area {
     .flex(stretch, flex-start);
     height: 300px;

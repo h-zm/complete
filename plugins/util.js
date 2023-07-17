@@ -107,3 +107,50 @@ export function _throttle(fn, delay) {
         }
     };
 }
+
+// 排序
+export function handleSort(data, handleFunc = () => {}) {
+    if (!Array.isArray(data)) {
+        console.log("传入比较的元素不是数组");
+        return false;
+    }
+
+    let sortType = null;
+
+    let loopFunc = function(data) {
+        let length = data?.length - 1;
+        // 因为有i+1,所以取到倒数第二个索引就行
+        for (let i = 0; i < length; i++) {
+            let a = JSON.parse(JSON.stringify(data[i]));
+            let b = JSON.parse(JSON.stringify(data[i + 1]));
+            let result = handleFunc(a, b);
+
+            if (sortType == null) {
+                // 期望最后的排序结果 sortType
+                // 为 true 降序
+                // 为 false 升序
+                sortType = !!result;
+            }
+
+            if (sortType && result > 0) {
+                // 排列为升序 但是 a大于b需要啊调整顺序
+                data.splice(i + 1 + 1, 0, a);
+                data.splice(i, 1);
+            } else if (!sortType && sortType < 0) {
+                // 排列为降序 但是 a小于b需要调整顺序
+                data.splice(i, 1);
+                data.splice(i - 1, 0, a);
+            }
+            // 俩个一样 不处理
+        }
+    };
+
+    let startIndex = 0;
+
+    while (startIndex < data.length) {
+        loopFunc(data);
+        startIndex++;
+    }
+    // 会直接更改data结构，也可以通过赋值接收
+    return data;
+}

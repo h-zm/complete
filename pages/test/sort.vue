@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { handleSort } from "~/plugins/util.js";
 export default {
     head() {
         return {
@@ -655,62 +656,21 @@ export default {
 
             // *法二
             // 理解sort函数原理
-            // 比较函数
-            let compareValue = function(a, b) {
-                // 返回true按照倒叙 返回false升序
-                // if (a.workOrderCode === b.workOrderCode) {
-                //     return a.pushTime - b.pushTime;
-                // } else {
-                //     return a.workOrderCode - b.workOrderCode;
-                // }
-                return a - b;
-            };
+            let tempList1 = [1, 2, 3, 9, 8, 6, 3, 5];
 
-            let sortType = null;
+            // 降序
+            handleSort(tempList1, (a, b) => b - a);
+            console.log("tempList1", tempList1);
 
-            let loopFunc = function(data, handleFunc = () => {}) {
-                let length = data?.length - 1;
-                console.log("handleFunc", handleFunc);
-                // 因为有i+1,所以取到倒数第二个索引就行
-                for (let i = 0; i < length; i++) {
-                    let a = JSON.parse(JSON.stringify(data[i]));
-                    let b = JSON.parse(JSON.stringify(data[i + 1]));
-
-                    let result = handleFunc(a, b);
-
-                    if (sortType == null) {
-                        // sortType 为 true 降序
-                        // 为 false 升序
-                        sortType = !!result;
-                        console.log("sortType", sortType);
-                    }
-
-                    if (sortType && result > 0) {
-                        // 排列为升序 但是 a大于b需要啊调整顺序
-                        data.splice(i + 1 + 1, 0, a);
-                        data.splice(i, 1);
-                    } else if (!sortType && sortType < 0) {
-                        // 排列为降序 但是 a小于b需要调整顺序
-                        data.splice(i, 1);
-                        data.splice(i - 1, 0, a);
-                    }
-                    // 俩个一样 不处理
+            // 升序
+            handleSort(this.originList, (a, b) => {
+                if (a.workOrderCode === b.workOrderCode) {
+                    return a.pushTime - b.pushTime;
+                } else {
+                    return a.workOrderCode - b.workOrderCode;
                 }
-            };
-
-            let startIndex = 0;
-            // let tempList = [...this.originList];
-            let tempList = [1, 9, 3, 4, 2, 1];
-
-            while (startIndex < tempList.length) {
-                loopFunc(tempList, compareValue);
-
-                startIndex++;
-            }
-
-            // this.originList = [...tempList];
-
-            console.log("tempList", tempList);
+            });
+            console.log("originList", this.originList);
         }
     }
 };

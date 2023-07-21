@@ -26,7 +26,15 @@ export default {
                 content: process.env.npm_package_description || ""
             }
         ],
-        link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
+        link: [
+            { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+            { rel: "stylesheet", href: "/iconfont/iconfont.css" }
+        ],
+        script: [
+            {
+                src: "/iconfont/iconfont.js"
+            }
+        ]
     },
     /*
      ** Customize the progress-bar color
@@ -37,7 +45,8 @@ export default {
      */
     css: [
         "element-ui/lib/theme-chalk/index.css",
-        "@/assets/css/transition.css"
+        "@/assets/css/transition.css",
+        "@/assets/css/index.css"
     ],
     /*
      ** Plugins to load before mounting the App

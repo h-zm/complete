@@ -144,7 +144,7 @@ export default {
                 this.pagenationInfo.pageNum = 1;
             }
             this.$axios
-                .post("http://localhost:5678/getSalarys", {
+                .post("http://localhost:7001/getSalarys", {
                     year: this.query.year
                         ? new Date(this.query.year).getFullYear()
                         : "",
@@ -202,7 +202,7 @@ export default {
                         .then(() => {
                             this.$axios
                                 .get(
-                                    `http://localhost:5678/deleteSalarys/${item.id}`
+                                    `http://localhost:7001/deleteSalarys/${item.id}`
                                 )
                                 .then(res => {
                                     if (res.code === 1000) {
@@ -244,7 +244,7 @@ export default {
                         aftertax: Number(this.formData.aftertax)
                     });
                     this.$axios
-                        .post("http://localhost:5678/addSalarys", form)
+                        .post("http://localhost:7001/addSalarys", form)
                         .then(res => {
                             if (res.code === 1000) {
                                 this.$message.success("新建成功~");
@@ -260,7 +260,7 @@ export default {
                         aftertax: Number(this.formData.aftertax)
                     });
                     this.$axios
-                        .post("http://localhost:5678/updateSalarys", form)
+                        .post("http://localhost:7001/updateSalarys", form)
                         .then(res => {
                             if (res.code === 1000) {
                                 this.$message.success("编辑成功~");

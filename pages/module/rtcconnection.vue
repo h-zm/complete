@@ -300,7 +300,16 @@ export default {
         width: 48%;
     }
 
-    &__left_block,
+    &__left_block {
+        height: 400px;
+        border: 1px solid #bcb6b6;
+        border-radius: 5px;
+
+        video {
+            width: 100%;
+            height: 100%;
+        }
+    }
     &__right_block {
         height: 400px;
         border: 1px solid #bcb6b6;
@@ -309,6 +318,7 @@ export default {
         video {
             width: 100%;
             height: 100%;
+            transform: scaleX(-1);
         }
     }
 }

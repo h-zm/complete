@@ -75,7 +75,7 @@ html {
 
 .main-content {
     // 使用margin-top 或者 margin-bottom 会改变.main的高度
-    padding: 96px 16px;
+    padding: 50px 12px 30px 12px;
     // width: 100%;
     // min-height: calc(100vh - 160px); // footer header 高度都为80px
     // background: #f6f6f6;

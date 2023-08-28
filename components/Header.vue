@@ -107,8 +107,8 @@ export default {
     // 添加一个基础的左右内边距
     padding: 0 16px;
     width: 100%;
-    height: 80px;
-    line-height: 80px;
+    height: 40px;
+    line-height: 40px;
     border-bottom: 1px solid #f4f4f4;
     border-radius: 0 0 4px 4px;
     background: #fff;

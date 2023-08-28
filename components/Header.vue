@@ -32,12 +32,12 @@
 
             <div class="header-menu" slot="reference">
                 <i class="el-icon-menu" slot="reference" title="菜单"></i>
-                menu
+                <!-- menu -->
             </div>
         </el-popover>
 
         <div class="header__center">
-            <var>header of complete</var>
+            <var>Complete</var>
             <i class="el-icon-s-home" @click="backHome()" title="到首页"></i>
         </div>
     </div>

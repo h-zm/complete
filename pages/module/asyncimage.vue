@@ -1,7 +1,12 @@
 <template>
     <!-- 测试图片懒加载 -->
     <div class="image-page">
-        <contents>测试懒加载</contents>
+        <contents>
+            懒加载： 1. 检查 <code> img </code> 是否添加 lazyload 属性 。
+            如果没有添加则返回 null ,反之返回设置内容或者空字符 <br />
+        </contents>
+
+        <img src="" id="sdfsaff" lazyLoad alt="" />
 
         <div class="image-page_loop">
             <div
@@ -10,12 +15,12 @@
                 class="image-page_item"
             >
                 <div>{{ index + 1 }}</div>
-                <comimage
+                <!-- <Comimage
                     :elementId="'async' + index"
                     :lazy="true"
                     :src="src"
                     @callback="callback"
-                ></comimage>
+                ></Comimage> -->
             </div>
         </div>
     </div>
@@ -43,9 +48,7 @@ export default {
             )
         };
     },
-    mounted() {
-        console.log("调用页面对象", this);
-    },
+    mounted() {},
     methods: {
         // 加载回调
         callback(data) {

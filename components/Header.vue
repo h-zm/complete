@@ -149,6 +149,9 @@ export default {
 }
 
 .menu-area {
+    // 80 + 80 + 10 +24 = 194
+    max-height: calc(90vh - 200px);
+    overflow: auto;
     font-size: 16px;
     &_item {
         padding: 6px 0;

@@ -42,8 +42,8 @@ export default {
             this.$store.dispatch("tagviews/addView", route);
         },
         changeView(item) {
-            location.href = item.path;
-            // this.$router.push(item.path);
+            // location.href = item.path;
+            this.$router.push(item.path);
         }
     }
 };

@@ -1,11 +1,15 @@
 <template>
     <div class="main">
-        <!-- <Tagview></Tagview> -->
+        <Tagview></Tagview>
         <Header />
 
-        <keep-alive :include="cachedViews">
-            <router-view class="main-content" :key="$route.path" />
-        </keep-alive>
+        <client-only>
+            <router-view class="main-content" v-slot="{ Component }">
+                <keep-alive :include="cachedViews">
+                    <router-link :is="Component" :key="$route.path" />
+                </keep-alive>
+            </router-view>
+        </client-only>
 
         <!-- <nuxt-child class="main-content" /> -->
         <Footer />

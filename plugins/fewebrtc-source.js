@@ -1,4 +1,6 @@
-const path = require('path');
+const path = require("path");
+
+var febId = "";
 
 // 获取视频流信息
 var constants;
@@ -15,7 +17,7 @@ var recordWhole;
 //视频流
 var mediaStream;
 
-// 录制开始时间 
+// 录制开始时间
 var startTime = 0;
 
 // 录制倒计时
@@ -65,7 +67,7 @@ var recordType;
 var content = null;
 
 // 插件初始化
-async function init(defaultData = "") {
+async function init(eleId = "", defaultData = "") {
     await getSupports();
 
     mediaOptions = {
@@ -87,6 +89,8 @@ async function init(defaultData = "") {
     if (defaultData.outputType) {
         outputType = defaultData.outputType;
     }
+
+    febId = eleId;
 
     // 渲染自生样式 不需要noRender参数传入true即可
     if (!defaultData.noRender) {
@@ -240,7 +244,7 @@ async function startRecord() {
 
     startTime = new Date().valueOf();
 
-    pickDown()
+    pickDown();
 
     // 及时更新
     recordTimer = setInterval(() => {
@@ -280,7 +284,7 @@ function stopRecord() {
 
     console.log("fe-webrtc stop--", recordTimes);
 
-    pickUp()
+    pickUp();
 
     startTime = 0;
 
@@ -345,7 +349,7 @@ function clearCurrentInterval() {
 
     if (btnTimeout) {
         clearTimeout(btnTimeout);
-        btnTimeout = null
+        btnTimeout = null;
     }
 }
 
@@ -499,7 +503,7 @@ function render() {
 
     const icon = createElement("img", {
         class: "fetab__block_img",
-        src: path.resolve(__dirname,'./action.png'),
+        src: path.resolve(__dirname, "./action.png"),
         style: "width:24px;height:24px"
     });
 
@@ -559,7 +563,7 @@ function render() {
     // 主元素
     content = createElement("div", {
         class: "fetab",
-        child: [timeBlock, icon,contentBtn],
+        child: [timeBlock, contentBtn],
         style:
             "position: fixed;top: 0px;left: 0;right: 0;z-index: 1200;margin: auto;padding: 4px 8px;width: fit-content;min-width:60px;background: #fff;border: 1px solid #f5f5f5;border-radius: 0px 0px 12px 12px;box-shadow: 0px 6px 8px 0px rgba(199, 199, 199, 0.16);/* 字体 */font-size: 12px;line-height: 1.4;color: #28282a;opacity:0;transition:.3s opacity ease;",
 
@@ -569,27 +573,31 @@ function render() {
 
     // 加入页面中
     if (document) {
-        document.body.appendChild(content);
+        // 直接推入 body 中，但是无法监听history的pushState，replaceState(Vue-Router使用)变化，在这种场景下无法注销
+        // document.body.appendChild(content);
+        // 插入子节点推入
+        // document.getElementById(febId).appendChild(content);
+        // 替换子节点 推入
+        const leaveEle = document.getElementById(febId);
+        leaveEle.parentNode.replaceChild(content, leaveEle);
         setTimeout(() => {
             content.style.opacity = 1;
         }, 800);
     }
 }
 
-
-
 // 按钮区样式展开
 function pickUp() {
     if (startTime) {
         // console.log("记录时鼠标移入组件区域");
         if (btnTimeout) {
-            clearTimeout(btnTimeout)
+            clearTimeout(btnTimeout);
             btnTimeout = null;
         }
         let btnArea = document.querySelector(".fetab__btn");
-        btnArea.style.width = 'unset';
-        btnArea.style.height = '24px';
-        btnArea.style.lineHeight = '24px';
+        btnArea.style.width = "unset";
+        btnArea.style.height = "24px";
+        btnArea.style.lineHeight = "24px";
     }
 }
 

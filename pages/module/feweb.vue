@@ -26,6 +26,7 @@
                 ></video>
             </div>
         </div>
+        <div :id="febId"></div>
     </div>
 </template>
 
@@ -37,7 +38,7 @@ import {
     stopRecord,
     download,
     getBlobData
-} from "fe-webrtc";
+} from "@/plugins/fewebrtc-source";
 
 // 是服务端渲染
 if (process.server) {
@@ -64,10 +65,12 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            febId: "feb-example"
+        };
     },
     mounted() {
-        init();
+        init(this.febId);
         // 是否 nuxt generator 运行
         if (process.static) {
             console.log("page: is nuxt generator");

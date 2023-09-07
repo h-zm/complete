@@ -2,11 +2,14 @@
     <!-- 测试图片懒加载 -->
     <div class="image-page">
         <contents>
-            懒加载： 1. 检查 <code> img </code> 是否添加 lazyload 属性 。
-            如果没有添加则返回 null ,反之返回设置内容或者空字符 <br />
+            懒加载： <br />1. 通过 <codes>getAttribute</codes> 或者
+            <codes>attributes</codes> 检查 <codes>img</codes> 标签是否添加
+            <codes>lazyload</codes> 属性 。 如果没有添加则返回
+            <codes>null</codes> ,反之返回设置内容或者空字符。 <br />
+            ps: &lt;img src="" id="sdfsaff" lazyLoad alt="" / &gt;
         </contents>
 
-        <img src="" id="sdfsaff" lazyLoad alt="" />
+        <!-- <img src="" id="sdfsaff" lazyLoad alt="" /> -->
 
         <div class="image-page_loop">
             <div

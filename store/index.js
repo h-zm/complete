@@ -1,3 +1,5 @@
+import tagviews from "./modules/tagviews";
+
 export const state = () => ({
     age: 20,
     name: "hzm",
@@ -55,6 +57,7 @@ export const actions = {
     }
 };
 
-// export const mapState({
-//   userInfo: state, // 用户信息
-// });
+// 通过 nuxt 框架绑定到
+export const modules = {
+    tagviews
+};

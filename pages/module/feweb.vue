@@ -1,9 +1,7 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="plug">
-        <img src="~/assets/image/action.png" alt="" />
-        <input type="file" @input="chooseFile($event)" />
-        <el-button @click="handleBack">fanhi</el-button>
+        <el-button @click="handleBack">下载Blob数据</el-button>
         <div class="plug__video">
             <div>
                 live：

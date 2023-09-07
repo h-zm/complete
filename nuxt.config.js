@@ -48,6 +48,11 @@ export default {
         "@/assets/css/transition.css",
         "@/assets/css/index.css"
     ],
+    // 页面缓存设置
+    cache: {
+        maxAge: 3600 * 24,
+        immutable: true
+    },
     /*
      ** Plugins to load before mounting the App
      */
@@ -172,6 +177,7 @@ export default {
         //   cert: fs.readFileSync(path.resolve(__dirname, "ca.crt")) // 证书
         // }
     },
+
     render: {
         http2: {
             push: true

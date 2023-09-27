@@ -38,7 +38,7 @@ export default {
                 name: capitalizeFirstLetter(name),
                 meta
             });
-            context.commit("ADD_CACHED", name);
+            context.commit("ADD_CACHED", path);
         },
         delView({ commit }, data) {}
     },

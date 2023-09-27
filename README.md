@@ -1,8 +1,3 @@
-# complete
-
-> &#39;芜湖~&#39;
-
-## Build Setup
 
 ```bash
 # install dependencies
@@ -19,6 +14,5 @@ $ yarn start
 $ yarn generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
 
 

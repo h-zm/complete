@@ -164,7 +164,10 @@ export default {
          * 每一个中间件应放置在 middleware/ 目录。文件名的名称将成为中间件名称 (middleware/auth.js将成为 auth 中间件)。
          */
         // 在这里为路由都加入了中间调用，也可以在特定页面单独调用
-        middleware: ["auth"]
+        middleware: ["auth"],
+
+        // 路由启用hash模式
+        mode: "history"
     },
     server: {
         port: "6638",

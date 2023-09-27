@@ -23,6 +23,7 @@
         "fe-webrtc": "file:fe-webrtc-1.0.6.tgz",
         "js-cookie": "^2.2.1",
         "js-web-screen-shot": "^1.9.8-rc.3",
+        "lru-cache": "^10.0.1",
         "nuxt": "^2.0.0",
         "qrcode": "^1.4.4",
         "qs": "^6.9.4",

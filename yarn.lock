@@ -5289,6 +5289,11 @@
   dependencies:
     "tslib" "^2.0.3"
 
+"lru-cache@^10.0.1":
+  "integrity" "sha512-IJ4uwUTi2qCccrioU6g9g/5rvvVl13bsdczUUcqbciD9iLr095yj8DQKdObriEvuNSx325N1rV1O0sJFszx75g=="
+  "resolved" "https://registry.npmjs.org/lru-cache/-/lru-cache-10.0.1.tgz"
+  "version" "10.0.1"
+
 "lru-cache@^4.1.2":
   "integrity" "sha1-i75Q6oW+1ZvJ4z3KuCNe6bz0Q80="
   "resolved" "https://registry.npm.taobao.org/lru-cache/download/lru-cache-4.1.5.tgz?cache=0&sync_timestamp=1594427519396&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flru-cache%2Fdownload%2Flru-cache-4.1.5.tgz"
@@ -5305,8 +5310,8 @@
     "yallist" "^3.0.2"
 
 "lru-cache@^6.0.0":
-  "integrity" "sha1-bW/mVw69lqr5D8rR2vo7JWbbOpQ="
-  "resolved" "https://registry.npm.taobao.org/lru-cache/download/lru-cache-6.0.0.tgz?cache=0&sync_timestamp=1594427519396&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Flru-cache%2Fdownload%2Flru-cache-6.0.0.tgz"
+  "integrity" "sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA=="
+  "resolved" "https://registry.npmjs.org/lru-cache/-/lru-cache-6.0.0.tgz"
   "version" "6.0.0"
   dependencies:
     "yallist" "^4.0.0"

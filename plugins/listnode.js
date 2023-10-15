@@ -98,7 +98,7 @@ class signleLink {
         }
     }
 
-    // 打印节点
+    // 打印值域
     print() {
         let valueList = [];
         let currentNode = this.head;
@@ -113,7 +113,7 @@ class signleLink {
 // 双链
 class doubleNode {
     constructor(value, pre = null, next = null) {
-        // 节点值
+        // 节点，双链中头节点没有pre，尾节点没有next
         this.value = value === undefined ? 0 : value;
         this.pre = pre;
         this.next = next;
@@ -122,7 +122,7 @@ class doubleNode {
 
 class doubleLink {
     constructor(value, pre = null, next = null) {
-        this.head = new doubleLink(value);
+        this.head = new doubleNode(value);
     }
 
     append(value) {
@@ -132,8 +132,25 @@ class doubleLink {
             preNode = currentNode;
             currentNode = currentNode.next;
         }
-        currentNode.next = new doubleNode(value, preNode);
+
+        // 兼容头部节点
+        if (!currentNode) {
+            this.head = new doubleNode(value);
+        } else {
+            currentNode.next = new doubleNode(value, preNode);
+        }
+    }
+
+    // 打印值域
+    print() {
+        let valueList = [];
+        let currentNode = this.head;
+        while (currentNode) {
+            valueList.push(currentNode.value);
+            currentNode = currentNode?.next || null;
+        }
+        return valueList;
     }
 }
 
-export { signleLink };
+export { signleLink, doubleLink };

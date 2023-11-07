@@ -1,7 +1,7 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="plug">
-        <el-button @click="handleBack">下载Blob数据</el-button>
+        <el-button @click="handleBack">下载Blob数据2</el-button>
         <div class="plug__video">
             <div>
                 live：
@@ -38,7 +38,7 @@ import {
     stopRecord,
     download,
     getBlobData
-} from "@/plugins/fewebrtc-source";
+} from "screen-record";
 
 // 是服务端渲染
 if (process.server) {
@@ -55,15 +55,7 @@ if (process.static) {
 }
 
 export default {
-    head() {
-        return {
-            title: "fe-webrtc",
-            meta: "",
-            description: "fe-webrtc插件使用",
-            name: "模板",
-            script: []
-        };
-    },
+    head() {},
     data() {
         return {
             febId: "feb-example"

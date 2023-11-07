@@ -32,6 +32,7 @@
 
 <script>
 import http from "axios";
+
 import {
     init,
     startRecord,
@@ -39,6 +40,14 @@ import {
     download,
     getBlobData
 } from "screen-record";
+
+// import {
+//     init,
+//     startRecord,
+//     stopRecord,
+//     download,
+//     getBlobData
+// } from "screen-record/dist/screen-record.min.js";
 
 // 是服务端渲染
 if (process.server) {
@@ -62,13 +71,13 @@ export default {
         };
     },
     mounted() {
-        init(this.febId);
         // 是否 nuxt generator 运行
         if (process.static) {
             console.log("page: is nuxt generator");
         } else {
             console.log("page: no nuxt generator");
         }
+        init(this.febId);
     },
     methods: {
         handleButton(type) {

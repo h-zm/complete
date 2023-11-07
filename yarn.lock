@@ -7139,9 +7139,9 @@ schema-utils@^3.0.0:
     ajv "^6.12.5"
     ajv-keywords "^3.5.2"
 
-"screen-record@file:screen-record-1.0.6.tgz":
-  version "1.0.6"
-  resolved "file:screen-record-1.0.6.tgz#e906c7dbc8bbebab8b47d75148a50ab25cdeb775"
+"screen-record@file:screen-record-1.1.0.tgz":
+  version "1.1.0"
+  resolved "file:screen-record-1.1.0.tgz#0b655668719bde9ce0ac4170959767530437b168"
 
 semver@^5.5.0, semver@^5.5.1, semver@^5.6.0, semver@^5.7.1:
   version "5.7.1"

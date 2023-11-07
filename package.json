@@ -20,7 +20,7 @@
         "echarts": "^5.4.2",
         "element-ui": "^2.4.11",
         "express": "^4.18.2",
-        "screen-record": "file:screen-record-1.0.6.tgz",
+        "screen-record": "file:screen-record-1.1.0.tgz",
         "js-cookie": "^2.2.1",
         "js-web-screen-shot": "^1.9.8-rc.3",
         "lru-cache": "^10.0.1",

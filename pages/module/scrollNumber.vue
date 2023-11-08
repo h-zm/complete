@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import emitter from "@/plugins/eventbus";
 import NumberAni from "~/components/NumberAni.vue";
 export default {
     components: {
@@ -69,12 +70,18 @@ export default {
         addValue(type) {
             switch (type) {
                 case "+":
+                    // emitter.emit("sdaf", this.varietyNum);
                     this.operateNum += 1;
                     break;
                 case "-":
                     this.operateNum -= 1;
                     break;
                 default:
+                    // emitter.on("sdaf", data => {
+                    //     console.log("afs", data);
+                    // });
+
+                    // console.log("emitter", emitter);
                     this.operateNum = 109;
                     break;
             }

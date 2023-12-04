@@ -37,6 +37,11 @@ export default {
     components: {
         NumberAni
     },
+    head() {
+        return {
+            title: "数字滚动"
+        };
+    },
     data() {
         return {
             // 一直滚动的数字

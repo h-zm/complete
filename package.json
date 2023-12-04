@@ -27,7 +27,7 @@
         "nuxt": "^2.0.0",
         "qrcode": "^1.4.4",
         "qs": "^6.9.4",
-        "screen-record": "file:screen-record-1.1.0.tgz",
+        "screen-record": "file:screen-record-1.1.2.tgz",
         "vue-notification": "^1.3.20"
     },
     "devDependencies": {
@@ -36,6 +36,7 @@
         "@babel/preset-env": "^7.12.17",
         "@nuxtjs/proxy": "^2.1.0",
         "@nuxtjs/style-resources": "^1.2.1",
+        "html-webpack-plugin": "^5.5.3",
         "koa": "^2.13.1",
         "koa-body": "^4.1.1",
         "koa-router": "^7.4.0",

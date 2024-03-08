@@ -95,6 +95,7 @@ export default {
     height: 100%;
     z-index: 3000;
     transition: 0.3s ease all;
+    overflow: hidden;
 
     &__mark {
         width: 100%;

@@ -32,12 +32,12 @@
 
             <div class="header-menu" slot="reference">
                 <i class="el-icon-menu" slot="reference" title="菜单"></i>
-                menu
+                <!-- menu -->
             </div>
         </el-popover>
 
         <div class="header__center">
-            <var>header of complete</var>
+            <var>Complete</var>
             <i class="el-icon-s-home" @click="backHome()" title="到首页"></i>
         </div>
     </div>
@@ -107,8 +107,8 @@ export default {
     // 添加一个基础的左右内边距
     padding: 0 16px;
     width: 100%;
-    height: 80px;
-    line-height: 80px;
+    height: 40px;
+    line-height: 40px;
     border-bottom: 1px solid #f4f4f4;
     border-radius: 0 0 4px 4px;
     background: #fff;
@@ -149,6 +149,9 @@ export default {
 }
 
 .menu-area {
+    // 80 + 80 + 10 +24 = 194
+    max-height: calc(90vh - 200px);
+    overflow: auto;
     font-size: 16px;
     &_item {
         padding: 6px 0;

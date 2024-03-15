@@ -1,17 +1,35 @@
 <template>
     <div class="main">
+        <!-- <Tagview></Tagview> -->
         <Header />
-        <nuxt class="main-content" />
+
+        <client-only>
+            <router-view class="main-content" v-slot="{ Component }">
+                <keep-alive :include="cachedViews">
+                    <router-link :is="Component" :key="$route.path" />
+                </keep-alive>
+            </router-view>
+        </client-only>
+
+        <!-- <nuxt-child class="main-content" /> -->
         <Footer />
     </div>
 </template>
 <script>
+import Tagview from "./components/tagview.vue";
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
 export default {
     components: {
         Header,
-        Footer
+        Footer,
+        Tagview
+    },
+    computed: {
+        cachedViews() {
+            console.log("缓存记录", this.$store.state?.tagviews?.cachedViews);
+            return this.$store.state?.tagviews?.cachedViews || [];
+        }
     }
 };
 </script>
@@ -75,7 +93,7 @@ html {
 
 .main-content {
     // 使用margin-top 或者 margin-bottom 会改变.main的高度
-    padding: 96px 16px;
+    padding: 50px 12px 38px 12px;
     // width: 100%;
     // min-height: calc(100vh - 160px); // footer header 高度都为80px
     // background: #f6f6f6;

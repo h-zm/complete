@@ -1,9 +1,7 @@
 <template>
     <!-- 新建文件的模板 -->
     <div class="plug">
-        <img src="~/assets/image/action.png" alt="" />
-        <input type="file" @input="chooseFile($event)" />
-        <el-button @click="handleBack">fanhi</el-button>
+        <el-button @click="handleBack">下载Blob数据2</el-button>
         <div class="plug__video">
             <div>
                 live：
@@ -28,18 +26,14 @@
                 ></video>
             </div>
         </div>
+        <div :id="febId"></div>
     </div>
 </template>
 
 <script>
 import http from "axios";
-import {
-    init,
-    startRecord,
-    stopRecord,
-    download,
-    getBlobData
-} from "fe-webrtc";
+
+import ewqr from "screen-record/dist/screen-record.min.js";
 
 // 是服务端渲染
 if (process.server) {
@@ -56,26 +50,21 @@ if (process.static) {
 }
 
 export default {
-    head() {
+    head() {},
+    data() {
         return {
-            title: "fe-webrtc",
-            meta: "",
-            description: "fe-webrtc插件使用",
-            name: "模板",
-            script: []
+            febId: "feb-example"
         };
     },
-    data() {
-        return {};
-    },
     mounted() {
-        init();
         // 是否 nuxt generator 运行
         if (process.static) {
             console.log("page: is nuxt generator");
         } else {
             console.log("page: no nuxt generator");
         }
+        // initRecord(this.febId);
+        console.log("ewqr", ewqr);
     },
     methods: {
         handleButton(type) {

@@ -48,9 +48,16 @@ export default {
         "@/assets/css/transition.css",
         "@/assets/css/index.css"
     ],
+    // 页面缓存设置
+    cache: {
+        maxAge: 3600 * 24,
+        immutable: true
+    },
     /*
      ** Plugins to load before mounting the App
      */
+
+    // publicPath: "/static",
 
     // 配置在客户端和服务端共享的环境变量, 实现
     env: {
@@ -159,7 +166,10 @@ export default {
          * 每一个中间件应放置在 middleware/ 目录。文件名的名称将成为中间件名称 (middleware/auth.js将成为 auth 中间件)。
          */
         // 在这里为路由都加入了中间调用，也可以在特定页面单独调用
-        middleware: ["auth"]
+        middleware: ["auth"],
+
+        // 路由启用hash/history模式
+        mode: "history"
     },
     server: {
         port: "6638",
@@ -172,6 +182,7 @@ export default {
         //   cert: fs.readFileSync(path.resolve(__dirname, "ca.crt")) // 证书
         // }
     },
+
     render: {
         http2: {
             push: true

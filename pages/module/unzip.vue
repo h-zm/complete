@@ -15,12 +15,13 @@
             <el-button size="small" type="primary">点击上传</el-button>
             <div slot="tip" class="el-upload__tip">上传</div>
         </el-upload>
-        <pre>{{ loadText }}</pre>
+        <pre>{{ resultList }}</pre>
     </div>
 </template>
 
 <script>
 import JSZip from "jszip";
+import Pako from "pako";
 export default {
     head() {
         return {
@@ -34,7 +35,7 @@ export default {
     data() {
         return {
             fileList: [],
-            loadText: "",
+            resultList: "",
         };
     },
     mounted() {},
@@ -43,19 +44,30 @@ export default {
             let obj = await JSZip.loadAsync(file);
             const tempFiles = obj.files;
             console.log("文件读取结果", tempFiles);
+            this.resultList = [];
             for (let i in tempFiles) {
-                // TextDecoder 文本解码器
-                let result = new TextDecoder().decode(
-                    tempFiles[i]._data.compressedContent
-                );
-                this.loadText = result;
-                console.log(`${tempFiles[i].name}`, result);
-                // const reader = new FileReader();
-                // reader.onload = function(event) {
-                //     console.log("文件数据", event?.target?.result || "");
-                // };
-                // // reader.readAsArrayBuffer(tempFiles[i]._data.compressedContent);
-                // reader.readAsBinaryString(tempFiles[i]._data.compressedContent);
+                // compressedContent 是已经被压缩过的 unit8Array数据 不能通过
+                // new TextDecoder().decode(Uint8ArrayTemp) 直接处理
+                if (tempFiles[i].name.endsWith(".txt")) {
+                    const compressedContent =
+                        tempFiles[i]._data.compressedContent;
+                    try {
+                        // 也可以直接使用 inflateRaw, 以 raw stream 形式解压 得到
+                        // 减压的 unit8Array 数据
+                        let result = Pako.inflate(compressedContent, {
+                            raw: true,
+                        });
+                        // 通过 TextDecoder().decode() 将 unit8Array 转化为 文本数据
+                        result = new TextDecoder().decode(result);
+                        this.resultList.push({
+                            name: tempFiles[i].name,
+                            content: result,
+                        });
+                        // console.log(`${tempFiles[i].name}`, result);
+                    } catch (err) {
+                        console.log("err", err);
+                    }
+                }
             }
         },
         handleBefore(file) {

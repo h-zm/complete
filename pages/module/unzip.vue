@@ -70,6 +70,24 @@ export default {
                 }
             }
         },
+
+        // 将文件转化为 文件流数据（二进制）
+        turnBuffer(file) {
+            // 创建一个 FileReader 对象
+            var reader = new FileReader();
+
+            // 监听 FileReader 加载完成事件
+            reader.onload = function (e) {
+                var fileStream = e.target.result; // 文件流
+
+                // 可以在这里对文件流进行处理，比如上传到服务器等操作
+                console.log(fileStream);
+            };
+
+            // 以二进制方式读取文件内容
+            reader.readAsArrayBuffer(file);
+        },
+
         handleBefore(file) {
             console.log("上传前", file);
             this.unzip(file);

@@ -10,55 +10,63 @@
             class="virtual__lock"
             id="virtualLock"
             :style="{
-                height: lockStyle.parentHeight + 'px'
+                height: lockStyle.parentHeight + 'px',
             }"
         >
             <div
                 class="virtual__lock_blank"
                 :style="{
-                    height: lockStyle.itemHeight * dataList.length + 'px'
+                    height: lockStyle.itemHeight * dataList.length + 'px',
                 }"
             >
                 <div
                     class="virtual__lock_item"
                     v-for="(item, index) in tempList"
-                    :key="index"
+                    :key="item.value"
                     :style="{
                         top: (item - 1) * lockStyle.itemHeight + 'px',
                         height: lockStyle.itemHeight + 'px',
-                        'line-height': lockStyle.itemHeight + 'px'
+                        'line-height': lockStyle.itemHeight + 'px',
                     }"
                 >
                     {{ item }}： top: {{ index * lockStyle.itemHeight }}px
                 </div>
             </div>
         </div>
-        <h5>2. 子元素高度不固定, 父级滚动距离{{ autoStyle.scrollTop }}</h5>
+        <h5>
+            2. 子元素高度不固定, 父级滚动距离{{ autoStyle.scrollTop }},
+            索引区间：{{ autoStyle.indexRange }}
+        </h5>
 
         <div
             class="virtual__auto"
             id="virtualAuto"
             :style="{
-                height: autoStyle.parentHeight + 'px'
+                height: autoStyle.parentHeight + 'px',
             }"
         >
             <div
                 class="virtual__auto_blank"
                 :style="{
-                    height: judgeHeight() + 'px'
+                    height: judgeHeight() + 'px',
                 }"
             >
                 <div
                     v-for="(item, index) in autoList"
-                    :key="index"
+                    :key="item.value"
                     class="virtual__auto_item"
-                    :class="{ virtual__auto_odd: item.value % 2 }"
+                    :class="{
+                        virtual__auto_odd: item.value % 2 ? true : false,
+                    }"
                     :style="{
-                        top: item.top + 'px'
+                        top: item.top + 'px',
                     }"
                 >
-                    {{ item.value }}： realTop: {{ item.top }}px, height:
-                    {{ item.clientHeight }}px
+                    {{ item.originIndex }}
+                    ： currentTop: {{ item.top }}px, correct:
+                    {{ judgeTop(item.value) }}px, height:{{
+                        item.clientHeight
+                    }}px
                 </div>
             </div>
         </div>
@@ -78,17 +86,18 @@ export default {
                 parentHeight: 240,
                 itemHeight: 30,
                 Num: 6,
-                scrollTop: 0
+                scrollTop: 0,
             },
             autoList1: [],
             autoList: [],
             autoStyle: {
                 parentHeight: 240,
                 itemHeight: "",
-                Num: 7,
+                Num: 8,
                 startIndex: 0,
-                scrollTop: 0
-            }
+                scrollTop: 0,
+                indexRange: "",
+            },
         };
     },
     created() {
@@ -104,6 +113,7 @@ export default {
             let target = document.getElementById("virtualLock");
             let autoTarget = document.getElementById("virtualAuto");
             if (target) {
+                // 子元素固定
                 target.addEventListener("scroll", this.handleScroll, false);
                 this.lockStyle.Num = Math.ceil(
                     this.lockStyle.parentHeight / this.lockStyle.itemHeight
@@ -118,13 +128,17 @@ export default {
                 );
 
                 // 初始化赋予数值
-                this.autoList1 = this.dataList.map(it => ({
+                this.autoList1 = this.dataList.map((it) => ({
                     value: it,
                     originIndex: it - 1,
                     clientHeight: 0,
-                    top: 0
+                    top: 0,
+                    dsf: 0,
                 }));
 
+                // 初步渲染
+                this.autoList = this.autoList1.slice(0, this.autoStyle.Num);
+                // 二次渲染赋予 top、client 属性
                 setTimeout(() => {
                     this.renderAutoChild();
                 }, 500);
@@ -139,6 +153,20 @@ export default {
             console.log("virtualLock滚动距离:", e.target.scrollTop);
             this.lockStyle.scrollTop = e.target.scrollTop || 0;
             this.renderChild();
+        },
+
+        judgeTop(value) {
+            let result = 0;
+            while (value--) {
+                if (value % 2) {
+                    // 奇数
+                    result += 58;
+                } else if (value) {
+                    // 排除 value 为 0 情况
+                    result += 38;
+                }
+            }
+            return result;
         },
 
         renderChild() {
@@ -171,7 +199,8 @@ export default {
                     }
                 }
             );
-            // console.log("virtualAuto startIndex:", this.autoStyle.startIndex);
+            console.log("virtualAuto startIndex:", this.autoStyle.startIndex);
+
             this.renderAutoChild();
         },
 
@@ -179,10 +208,12 @@ export default {
             let showEndIndex = this.autoList.slice(-1)?.[0];
             let result = 0;
 
+            // 渲染到最后一个元素时 取所有元素的 clientHeight
             if (showEndIndex?.originIndex === this.autoList1.length - 1) {
                 result = this.autoList1.reduce((a, b) => a + b.clientHeight, 0);
             } else {
-                let existList = this.autoList.map(it => it.clientHeight);
+                // 没有获取到最后一个元素 取已经渲染的 height 进行平均
+                let existList = this.autoList.map((it) => it.clientHeight);
                 let averageHeight =
                     existList.reduce((a, b) => a + b, 0) / existList.length;
                 result = averageHeight * this.autoList1.length;
@@ -191,78 +222,62 @@ export default {
         },
 
         renderAutoChild() {
-            let childList = Array.from(
-                document.getElementById("virtualAuto").childNodes[0]
-                    .childNodes || []
-            );
-
             let finalStartIndex = Math.max(this.autoStyle.startIndex - 2, 0);
 
             let endIndex = Math.min(
                 this.autoStyle.startIndex + this.autoStyle.Num,
                 this.autoList1.length
             );
+            this.autoStyle.indexRange = [finalStartIndex, endIndex];
 
-            console.log("索引区间", finalStartIndex, endIndex);
+            let childList =
+                document.getElementById("virtualAuto").childNodes[0]
+                    .childNodes || [];
 
-            // console.log("childList", childList);
+            console.log("childList", childList);
 
             let temp = [];
             for (let i = finalStartIndex; i < endIndex; i++) {
                 // 新加元素记录一下top值
-                if (!this.autoList1[i].top || this.autoList1[i].top == 0) {
+                if (!this.autoList1[i].top || !this.autoList1[i].clientHeight) {
+                    // 特殊处理 finalStartIndex 从 0 开始，
+                    // eg: 若 i = 2，finalStartIndex 为 0，取前一元素高度，应该是1的高度。如果使用 2 - 0，就会
+                    // 取到自身，当 finalStartIndex 不为0时可以取用 i - finalStartIndex
+                    // 是 finalStartIndex 若为 0 时
+                    let tempStartIndex = Math.max(finalStartIndex, 1);
+
                     if (i === 0) {
                         this.autoList1[i].top = 0;
                     } else {
-                        // 特殊处理 finalStartIndex 从 0 开始，
-                        // eg: 若 i = 2，finalStartIndex 为 0，取前一元素高度，应该是1的高度。如果使用 2 - 0，就会
-                        // 取到自身，当 finalStartIndex 不为0时可以取用 i - finalStartIndex
-                        // 是 finalStartIndex 若为 0 时
-                        let targetIndex = Math.max(finalStartIndex, 1);
                         this.autoList1[i].top =
                             this.autoList1[i - 1].top +
-                                childList[i - targetIndex]?.clientHeight || 0;
+                                childList[i - tempStartIndex]?.clientHeight ||
+                            0;
                     }
 
+                    // 根据页面渲染元素获取真实高度记录
                     this.autoList1[i].clientHeight =
-                        childList[i - finalStartIndex]?.clientHeight || 0;
+                        childList[i - finalStartIndex]?.clientHeight;
                 }
+
+                // if (
+                //     !this.autoList1[i].clientHeight ||
+                //     this.autoList1[i].clientHeight !==
+                //         childList[i - finalStartIndex]?.clientHeight
+                // ) {
+                //     // 根据页面渲染元素获取真实高度记录
+                //     this.autoList1[i].clientHeight =
+                //         childList[i - finalStartIndex]?.clientHeight || 0;
+                // }
+
                 temp.push(this.autoList1[i]);
             }
 
             this.autoList = temp;
 
-            // console.log("目标2", this.autoList);
+            console.log("目标2", this.autoList1);
         },
-
-        // 失败方法
-        failHandle() {
-            // this.autoList = [...this.dataList]
-            //     .slice(finalStartIndex, endIndex)
-            //     .map((it, index) => ({
-            //         value: it,
-            //         originIndex: finalStartIndex + index,
-            //         // top: childList
-            //         //     ?.slice(0, index)
-            //         //     ?.reduce(
-            //         //         (a, b) => a + b.clientHeight || b.offsetHeight,
-            //         //         0
-            //         //     )
-            //         // top: (() => {
-            //         //     if (index !== 0) {
-            //         //         result += childList
-            //         //             ?.slice(finalStartIndex, index)
-            //         //             ?.reduce(
-            //         //                 (a, b) =>
-            //         //                     a + b.clientHeight || b.offsetHeight,
-            //         //                 0
-            //         //             );
-            //         //     }
-            //         //     return result;
-            //         // })()
-            //     }));
-        }
-    }
+    },
 };
 </script>
 

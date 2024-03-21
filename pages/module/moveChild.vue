@@ -15,9 +15,7 @@
         </Contents>
         <div class="moving-area">
             <!-- 可以通过 tag attribute 配置哪个元素应该被渲染，默认渲染 <span> -->
-            <div>
-                1. 通过 drop 方法实现一步到位，
-            </div>
+            <div>1. 通过 drop 方法实现一步到位，</div>
             <div @dragleave="dragLeave">
                 <div
                     class="moving-area-item"
@@ -64,7 +62,7 @@
                         :key="item.id"
                         :style="{
                             transform: 'translateY(' + item.trans + 'px)',
-                            zIndex: item.id + 1
+                            zIndex: item.id + 1,
                         }"
                         draggable="true"
                         @dragstart="transStart(item, index, $event)"
@@ -80,12 +78,12 @@
 </template>
 
 <script>
-import Colors from "../../components/Font/Colors.vue";
+import Colors from "@/components/Font/Colors.vue";
 export default {
     components: { Colors },
     head() {
         return {
-            title: "移动元素"
+            title: "移动元素",
         };
     },
     data() {
@@ -96,7 +94,7 @@ export default {
                 { name: "testC", id: 3, choose: false },
                 { name: "testD", id: 4, choose: false },
                 { name: "testE", id: 5, choose: false },
-                { name: "testF", id: 6, choose: false }
+                { name: "testF", id: 6, choose: false },
             ],
             dragElement: null,
 
@@ -106,7 +104,7 @@ export default {
                 { name: "C", id: 3, choose: false },
                 { name: "D", id: 4, choose: false },
                 { name: "E", id: 5, choose: false },
-                { name: "F", id: 6, choose: false }
+                { name: "F", id: 6, choose: false },
             ],
             handleDrag: null,
 
@@ -116,9 +114,9 @@ export default {
                 { name: "transC", id: 3, choose: false, index: 2, trans: 0 },
                 { name: "transD", id: 4, choose: false, index: 3, trans: 0 },
                 { name: "transE", id: 5, choose: false, index: 4, trans: 0 },
-                { name: "transF", id: 6, choose: false, index: 5, trans: 0 }
+                { name: "transF", id: 6, choose: false, index: 5, trans: 0 },
             ],
-            transElement: null
+            transElement: null,
         };
     },
     mounted() {},
@@ -188,7 +186,7 @@ export default {
         // 平滑所需使用到的方法
         handleStart(item, index, e) {
             this.handleDrag = {
-                ...item
+                ...item,
             };
         },
         handleEnter(item, index, e) {
@@ -196,7 +194,7 @@ export default {
             e.dataTransfer.effectAllowed = "move"; //为需要移动的元素设置dragstart事件
             let newList = this.handleList;
             let oldIndex = newList.findIndex(
-                temp => temp.id == this.handleDrag.id
+                (temp) => temp.id == this.handleDrag.id
             );
             let newIndex = index;
             // console.log("旧索引", oldIndex, "新索引", newIndex);
@@ -264,8 +262,8 @@ export default {
         transEnd(item, index, e) {
             e.preventDefault();
             // console.log(`放置项目索引值是${index},内容是%o`, e);
-        }
-    }
+        },
+    },
 };
 </script>
 

@@ -101,7 +101,7 @@ export default {
         };
     },
     created() {
-        this.dataList = Array(30)
+        this.dataList = Array(40)
             .fill(0)
             .map((it, index) => index + 1);
     },
@@ -133,7 +133,7 @@ export default {
                     originIndex: it - 1,
                     clientHeight: 0,
                     top: 0,
-                    dsf: 0,
+                    dsf: null,
                 }));
 
                 // 初步渲染
@@ -240,24 +240,34 @@ export default {
             for (let i = finalStartIndex; i < endIndex; i++) {
                 // 新加元素记录一下top值
                 if (!this.autoList1[i].top || !this.autoList1[i].clientHeight) {
-                    // 特殊处理 finalStartIndex 从 0 开始，
-                    // eg: 若 i = 2，finalStartIndex 为 0，取前一元素高度，应该是1的高度。如果使用 2 - 0，就会
-                    // 取到自身，当 finalStartIndex 不为0时可以取用 i - finalStartIndex
-                    // 是 finalStartIndex 若为 0 时
-                    let tempStartIndex = Math.max(finalStartIndex, 1);
-
+                    // top 应该是前一元素的top值加上前一元素的clientHeight(元素高度)
+                    // 但索引为0时，需要特殊处理
                     if (i === 0) {
                         this.autoList1[i].top = 0;
                     } else {
+                        // eg: 若 i = 2，finalStartIndex 为 0，取前一元素高度，应该是索引1的高度。
+                        // 如果使用 2 - 0，就会取到自身，应该是 2 - 1； startIndex
+                        // 当 finalStartIndex 不为0时， 比如 startIndex 为 8 ，finalStartIndex 为 6， i为8时进入判断， 可以取用 i - finalStartIndex；
+                        let tempStartIndex = Math.max(finalStartIndex, 1);
                         this.autoList1[i].top =
                             this.autoList1[i - 1].top +
                                 childList[i - tempStartIndex]?.clientHeight ||
                             0;
                     }
 
+                    // 获取自身高度
+                    // 当 startIndex 为 0，即 finalStartIndex 为 0 时，autoList1 与 childList 的索引是能够直接对应不用特殊处理的；
+                    // 当 startIndex 为 3，finalStartIndex 则为 1，finalStartIndex 已经不从0开始循环，而childList所指代的真实节点还是索引为0的起点；
+                    // i为10（autoStyle.num 为 8，首次进入页面刷新10在区间1，11之内）进入判断时，获取当前真实元素元素高度，应该是childList中第7个元素，但是10 - 1 = 9，
+                    // autoList1 i 与
+                    // 如果不添加 tempBase dsf 绑定到的是 i 为 8 的元素
+                    let tempBase = Math.min(finalStartIndex, 1);
+                    this.autoList1[i].dsf =
+                        childList[i - finalStartIndex + tempBase];
+
                     // 根据页面渲染元素获取真实高度记录
                     this.autoList1[i].clientHeight =
-                        childList[i - finalStartIndex]?.clientHeight;
+                        childList[i - finalStartIndex + tempBase]?.clientHeight;
                 }
 
                 // if (

@@ -91,9 +91,9 @@ export default {
             autoList1: [],
             autoList: [],
             autoStyle: {
-                parentHeight: 240,
+                parentHeight: 140,
                 itemHeight: "",
-                Num: 8,
+                Num: 6, // 为 6 会有问题，Num 平均高度之和与是parentHeight两倍，利于元素渲染并获取其clientHeight，如Num 8， parentHeight可以为400
                 startIndex: 0,
                 scrollTop: 0,
                 indexRange: "",
@@ -133,7 +133,7 @@ export default {
                     originIndex: it - 1,
                     clientHeight: 0,
                     top: 0,
-                    dsf: null,
+                    realDom: null,
                 }));
 
                 // 初步渲染
@@ -210,13 +210,20 @@ export default {
 
             // 渲染到最后一个元素时 取所有元素的 clientHeight
             if (showEndIndex?.originIndex === this.autoList1.length - 1) {
-                result = this.autoList1.reduce((a, b) => a + b.clientHeight, 0);
+                result = this.autoList1.reduce(
+                    (a, b) => a + b?.clientHeight || 0,
+                    0
+                );
+                console.log("1", showEndIndex, result);
             } else {
                 // 没有获取到最后一个元素 取已经渲染的 height 进行平均
-                let existList = this.autoList.map((it) => it.clientHeight);
+                let existList = this.autoList
+                    .filter((it) => it.clientHeight)
+                    .map((it) => it.clientHeight);
                 let averageHeight =
                     existList.reduce((a, b) => a + b, 0) / existList.length;
                 result = averageHeight * this.autoList1.length;
+                console.log("2", averageHeight, result);
             }
             return result || 400;
         },
@@ -234,7 +241,7 @@ export default {
                 document.getElementById("virtualAuto").childNodes[0]
                     .childNodes || [];
 
-            console.log("childList", childList);
+            // console.log("childList", childList);
 
             let temp = [];
             for (let i = finalStartIndex; i < endIndex; i++) {
@@ -260,9 +267,10 @@ export default {
                     // 当 startIndex 为 3，finalStartIndex 则为 1，finalStartIndex 已经不从0开始循环，而childList所指代的真实节点还是索引为0的起点；
                     // i为10（autoStyle.num 为 8，首次进入页面刷新10在区间1，11之内）进入判断时，获取当前真实元素元素高度，应该是childList中第7个元素，但是10 - 1 = 9，
                     // autoList1 i 与
-                    // 如果不添加 tempBase dsf 绑定到的是 i 为 8 的元素
+                    // 如果不添加 tempBase realDom 绑定到的是 i 为 8 的元素
                     let tempBase = Math.min(finalStartIndex, 1);
-                    this.autoList1[i].dsf =
+                    // 通过realDom属性 溯源真实元素
+                    this.autoList1[i].realDom =
                         childList[i - finalStartIndex + tempBase];
 
                     // 根据页面渲染元素获取真实高度记录
@@ -285,7 +293,7 @@ export default {
 
             this.autoList = temp;
 
-            console.log("目标2", this.autoList1);
+            // console.log("目标2", this.autoList1);
         },
     },
 };

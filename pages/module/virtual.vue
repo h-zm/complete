@@ -34,8 +34,10 @@
             </div>
         </div>
         <h5>
-            2. 子元素高度不固定, 父级滚动距离{{ autoStyle.scrollTop }},
-            索引区间：{{ autoStyle.indexRange }}
+            2.1 子元素高度不固定, 父级滚动距离{{ autoStyle.scrollTop }},
+            索引区间：{{
+                autoStyle.indexRange
+            }}，有时会渲染混乱可能是因为页面元素渲染未完成就执行了js逻辑
         </h5>
 
         <div
@@ -48,7 +50,7 @@
             <div
                 class="virtual__auto_blank"
                 :style="{
-                    height: judgeHeight() + 'px',
+                    height: judgeAutoHeight() + 'px',
                 }"
             >
                 <div
@@ -62,6 +64,46 @@
                         top: item.top + 'px',
                     }"
                 >
+                    {{ item.originIndex }}
+                    ： currentTop: {{ item.top }}px, correct:
+                    {{ judgeTop(item.value) }}px, height:{{
+                        item.clientHeight
+                    }}px
+                </div>
+            </div>
+        </div>
+
+        <h5>
+            2.2 优化 子元素高度不固定, 父级滚动距离{{ selfStyle.scrollTop }},
+            索引区间：{{ selfStyle.indexRange }}
+        </h5>
+
+        <div
+            class="virtual__self"
+            id="virtualSelf"
+            :style="{
+                height: selfStyle.parentHeight + 'px',
+            }"
+        >
+            <div
+                class="virtual__self_blank"
+                :style="{
+                    height: judgeSelfHeight() + 'px',
+                }"
+            >
+                <div
+                    v-for="(item, index) in selfList"
+                    :key="item.key"
+                    :id="item.key"
+                    class="virtual__self_item"
+                    :class="{
+                        virtual__self_odd: item.value % 2 ? true : false,
+                    }"
+                    :style="{
+                        top: item.top + 'px',
+                    }"
+                >
+                    {{ handleSelfItemHeight(item) }}
                     {{ item.originIndex }}
                     ： currentTop: {{ item.top }}px, correct:
                     {{ judgeTop(item.value) }}px, height:{{
@@ -98,6 +140,17 @@ export default {
                 scrollTop: 0,
                 indexRange: "",
             },
+
+            selfList: [],
+            selfOrigin: [],
+            selfStyle: {
+                parentHeight: 240,
+                itemHeight: "",
+                Num: 6,
+                startIndex: 0,
+                scrollTop: 0,
+                indexRange: "",
+            },
         };
     },
     created() {
@@ -107,46 +160,18 @@ export default {
     },
     mounted() {
         this.handleListenning();
+        this.handleAuto();
+        this.handleSelf();
     },
     methods: {
         handleListenning() {
             let target = document.getElementById("virtualLock");
-            let autoTarget = document.getElementById("virtualAuto");
-            if (target) {
-                // 子元素固定
-                target.addEventListener("scroll", this.handleScroll, false);
-                this.lockStyle.Num = Math.ceil(
-                    this.lockStyle.parentHeight / this.lockStyle.itemHeight
-                );
-                this.renderChild();
-
-                // 子元素不固定
-                autoTarget.addEventListener(
-                    "scroll",
-                    this.handleAutoScroll,
-                    false
-                );
-
-                // 初始化赋予数值
-                this.autoList1 = this.dataList.map((it) => ({
-                    value: it,
-                    originIndex: it - 1,
-                    clientHeight: 0,
-                    top: 0,
-                    realDom: null,
-                }));
-
-                // 初步渲染
-                this.autoList = this.autoList1.slice(0, this.autoStyle.Num);
-                // 二次渲染赋予 top、client 属性
-                setTimeout(() => {
-                    this.renderAutoChild();
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    this.handleListenning;
-                }, 500);
-            }
+            // 子元素固定
+            target.addEventListener("scroll", this.handleScroll, false);
+            this.lockStyle.Num = Math.ceil(
+                this.lockStyle.parentHeight / this.lockStyle.itemHeight
+            );
+            this.renderChild();
         },
 
         handleScroll(e) {
@@ -178,7 +203,31 @@ export default {
                 startIndex + this.lockStyle.Num,
                 this.dataList.length
             );
+            // slice 不会取 endIndex
             this.tempList = this.dataList.slice(finalStartIndex, endIndex);
+        },
+
+        handleAuto() {
+            let autoTarget = document.getElementById("virtualAuto");
+
+            // 子元素不固定
+            autoTarget.addEventListener("scroll", this.handleAutoScroll, false);
+            // 初始化赋予数值
+            this.autoList1 = this.dataList.map((it) => ({
+                value: it,
+                originIndex: it - 1,
+                clientHeight: 0,
+                top: 0,
+                realDom: null,
+            }));
+
+            // 初步渲染
+            this.autoList = this.autoList1.slice(0, this.autoStyle.Num + 2);
+
+            // 二次渲染赋予 top、client 属性
+            setTimeout(() => {
+                this.renderAutoChild();
+            }, 500);
         },
 
         handleAutoScroll(e) {
@@ -204,7 +253,7 @@ export default {
             this.renderAutoChild();
         },
 
-        judgeHeight() {
+        judgeAutoHeight() {
             let showEndIndex = this.autoList.slice(-1)?.[0];
             let result = 0;
 
@@ -214,7 +263,6 @@ export default {
                     (a, b) => a + b?.clientHeight || 0,
                     0
                 );
-                console.log("1", showEndIndex, result);
             } else {
                 // 没有获取到最后一个元素 取已经渲染的 height 进行平均
                 let existList = this.autoList
@@ -223,7 +271,6 @@ export default {
                 let averageHeight =
                     existList.reduce((a, b) => a + b, 0) / existList.length;
                 result = averageHeight * this.autoList1.length;
-                console.log("2", averageHeight, result);
             }
             return result || 400;
         },
@@ -232,16 +279,17 @@ export default {
             let finalStartIndex = Math.max(this.autoStyle.startIndex - 2, 0);
 
             let endIndex = Math.min(
-                this.autoStyle.startIndex + this.autoStyle.Num,
+                this.autoStyle.startIndex + this.autoStyle.Num + 2,
                 this.autoList1.length
             );
+
             this.autoStyle.indexRange = [finalStartIndex, endIndex];
 
             let childList =
                 document.getElementById("virtualAuto").childNodes[0]
                     .childNodes || [];
 
-            // console.log("childList", childList);
+            console.log("childList", childList);
 
             let temp = [];
             for (let i = finalStartIndex; i < endIndex; i++) {
@@ -295,6 +343,103 @@ export default {
 
             // console.log("目标2", this.autoList1);
         },
+
+        handleSelf() {
+            let target = document.getElementById("virtualSelf");
+            target.addEventListener("scroll", this.handleSelfScroll, false);
+
+            this.selfOrigin = this.dataList.map((it) => ({
+                value: it,
+                originIndex: it - 1,
+                clientHeight: 0,
+                top: 0,
+                realDom: null,
+                key: `ad_${it - 1}`,
+            }));
+
+            this.handleSelfRender();
+        },
+
+        handleSelfScroll(e) {
+            // console.log("virtualSelf 滚动距离:", e.target.scrollTop);
+            this.selfStyle.scrollTop = e.target.scrollTop || 0;
+
+            // 通过滚动距离与每个记录好的子元素top值对比 判断起始索引
+            this.selfStyle.startIndex = this.selfOrigin.findIndex(
+                (it, index) => {
+                    if (
+                        this.selfStyle.scrollTop >= it.top &&
+                        this.selfStyle.scrollTop <
+                            this.selfOrigin[index + 1]?.top
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            );
+            this.handleSelfRender();
+        },
+
+        judgeSelfHeight() {
+            let showEndIndex = this.selfList.slice(-1)?.[0];
+            let result = 0;
+
+            // 渲染到最后一个元素时 取所有元素的 clientHeight
+            if (showEndIndex?.originIndex === this.selfOrigin.length - 1) {
+                result = this.selfOrigin.reduce(
+                    (a, b) => a + b?.clientHeight || 0,
+                    0
+                );
+            } else {
+                // 没有获取到最后一个元素 取已经渲染的 height 进行平均
+                let existList = this.autoList
+                    .filter((it) => it.clientHeight)
+                    .map((it) => it.clientHeight);
+                let averageHeight =
+                    existList.reduce((a, b) => a + b, 0) / existList.length;
+                result = averageHeight * this.selfOrigin.length;
+            }
+
+            return result || 400;
+        },
+
+        handleSelfRender() {
+            let finalStartIndex = Math.max(this.selfStyle.startIndex - 2, 0);
+
+            let endIndex = Math.min(
+                this.selfStyle.startIndex + this.selfStyle.Num + 2,
+                this.selfOrigin.length
+            );
+
+            this.selfStyle.indexRange = [finalStartIndex, endIndex];
+
+            this.selfList = this.selfOrigin.slice(finalStartIndex, endIndex);
+        },
+
+        // 放在标签里的js执行是为了保证元素渲染完能获取到真实高度
+        handleSelfItemHeight(item) {
+            console.log(`${item.key}`, item);
+            // 在页面渲染元素之后之后, 不设置0,如设置100，200 推入新元素赶不上滚动条的
+            setTimeout(() => {
+                if (!item.clientHeight) {
+                    item.clientHeight = document.getElementById(
+                        item.key
+                    ).clientHeight;
+
+                    this.selfOrigin[item.originIndex].clientHeight =
+                        item.clientHeight;
+                    let top = 0;
+                    if (item.originIndex !== 0) {
+                        top =
+                            this.selfOrigin[item.originIndex - 1].top +
+                            this.selfOrigin[item.originIndex - 1].clientHeight;
+                    }
+                    item.top = top;
+                    this.selfOrigin[item.originIndex].top = top;
+                }
+            }, 0);
+        },
     },
 };
 </script>
@@ -344,6 +489,33 @@ export default {
             line-height: 18px;
             width: 100%;
         }
+
+        &_odd {
+            padding: 20px 16px;
+            background-color: #f5f5f5;
+        }
+    }
+
+    &__self {
+        margin: 0 0 30px 0;
+        width: 100%;
+        border: 1px solid #f5f5f5;
+        border-radius: 4px;
+        overflow-y: auto;
+
+        &_blank {
+            position: relative;
+        }
+
+        &_item {
+            position: absolute;
+            left: 0;
+            z-index: 1;
+            padding: 10px 16px;
+            line-height: 18px;
+            width: 100%;
+        }
+
         &_odd {
             padding: 20px 16px;
             background-color: #f5f5f5;

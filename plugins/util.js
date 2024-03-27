@@ -1,5 +1,5 @@
 // 返回星期
-export const weekFunc = weekday => {
+export const weekFunc = (weekday) => {
     let resultDay = "";
     switch (weekday) {
         case 0:
@@ -72,7 +72,7 @@ export function _debounce(fn, delay) {
     var delay = delay || 1000;
     var timer = null;
     // console.log("终端timer1", timer);
-    return function() {
+    return function () {
         var _this = this; // 供后续_this转向使用
         var arg = arguments;
         // console.log(timer, number, '函数再次被触发');
@@ -92,7 +92,7 @@ export function _debounce(fn, delay) {
 export function _throttle(fn, delay) {
     var startTime = null;
     var timer = null;
-    return function() {
+    return function () {
         var _this = this;
         var args = arguments;
         var currTime = new Date();
@@ -117,7 +117,7 @@ export function handleSort(data, handleFunc = () => {}) {
 
     let sortType = null;
 
-    let loopFunc = function(data) {
+    let loopFunc = function (data) {
         let length = data?.length - 1;
         // 因为有i+1,所以取到倒数第二个索引就行
         for (let i = 0; i < length; i++) {
@@ -153,4 +153,17 @@ export function handleSort(data, handleFunc = () => {}) {
     }
     // 会直接更改data结构，也可以通过赋值接收
     return data;
+}
+
+export function isPhoneNumber(phoneNumber) {
+    const regExp = /^1[3456789]\d{9}$/; // 定义手机号的正则表达式
+    return regExp.test(phoneNumber); // 使用 test 方法进行匹配
+}
+
+export function hidePhoneNumber(phoneNumber) {
+    // 使用正则表达式匹配手机号的前三位和后四位，并将中间的数字替换为 * 号
+    if (isPhoneNumber(phoneNumber)) {
+        return phoneNumber.replace(/^(\d{3})\d+(\d{4})$/, "$1****$2");
+    }
+    return phoneNumber;
 }

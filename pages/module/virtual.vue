@@ -135,7 +135,7 @@ export default {
             autoStyle: {
                 parentHeight: 140,
                 itemHeight: "",
-                Num: 6, // 为 6 会有问题，Num 平均高度之和与是parentHeight两倍，利于元素渲染并获取其clientHeight，如Num 8， parentHeight可以为400
+                Num: 50, // 为 6 会有问题，Num 平均高度之和与是parentHeight两倍，利于元素渲染并获取其clientHeight，如Num 8， parentHeight可以为400
                 startIndex: 0,
                 scrollTop: 0,
                 indexRange: "",
@@ -146,7 +146,7 @@ export default {
             selfStyle: {
                 parentHeight: 240,
                 itemHeight: "",
-                Num: 6,
+                Num: 50,
                 startIndex: 0,
                 scrollTop: 0,
                 indexRange: "",
@@ -154,7 +154,7 @@ export default {
         };
     },
     created() {
-        this.dataList = Array(40)
+        this.dataList = Array(1000)
             .fill(0)
             .map((it, index) => index + 1);
     },
@@ -289,7 +289,7 @@ export default {
                 document.getElementById("virtualAuto").childNodes[0]
                     .childNodes || [];
 
-            console.log("childList", childList);
+            // console.log("childList", childList);
 
             let temp = [];
             for (let i = finalStartIndex; i < endIndex; i++) {
@@ -419,7 +419,7 @@ export default {
 
         // 放在标签里的js执行是为了保证元素渲染完能获取到真实高度
         handleSelfItemHeight(item) {
-            console.log(`${item.key}`, item);
+            // console.log(`${item.key}`, item);
             // 在页面渲染元素之后之后, 不设置0,如设置100，200 推入新元素赶不上滚动条的
             setTimeout(() => {
                 if (!item.clientHeight) {

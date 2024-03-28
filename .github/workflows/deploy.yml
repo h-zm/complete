@@ -18,21 +18,21 @@ jobs:
         # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@master
+            - uses: actions/checkout@4
 
             - name: install npm
-              uses: actions/setup-node@v1
+              uses: actions/setup-node@4
               with:
                   node-version: "14"
 
             - name: Verify npm
               run: npm -v
 
-            - name: pwd
+            - name: Verify pwd
               run: pwd
 
             # Runs a set of commands using the runners shell
             - name: run project
-              run: |
-                  npm install
-                  npm run dev
+              run:  npm install
+              run:  npm run dev
+                

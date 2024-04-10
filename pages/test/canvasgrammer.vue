@@ -2,10 +2,8 @@
     <div>
         <!-- 模拟使用canvas标签 可参考 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API -->
         <div>
-            <content-tip>
-                1.使用canvas画矩形
-            </content-tip>
-            <canvas id="firstCanvas"></canvas>
+            <div>1.使用canvas画矩形</div>
+            <canvas id="firstCanvas"> 当前不支持canvas渲染 </canvas>
         </div>
         <div>
             <h4>2.使用canvas画路径</h4>
@@ -29,6 +27,18 @@
             <h4>5.使用path2d</h4>
             <canvas id="fiveCanvas"></canvas>
         </div>
+        <div>
+            <h4>6.显示文字</h4>
+            <canvas id="sixCanvas"> current stock price: $3.15 +0.15 </canvas>
+        </div>
+        <div>
+            <h4>7.显示图片</h4>
+            <canvas id="sevenCanvas"> </canvas>
+            <h4>7.1 css 实现鼠标移入样式</h4>
+            <canvas id="sevenCanvas1" class="sevenCanvas1"> </canvas>
+            <h4>7.2 canvas reset重绘实现鼠标移入样式更改</h4>
+            <canvas id="sevenCanvas2"> </canvas>
+        </div>
     </div>
 </template>
 
@@ -43,6 +53,9 @@ export default {
         this.drawCanvasSecond();
         this.drawThrid();
         this.drawFourth();
+        this.handleSeven();
+        this.handleSeven1();
+        this.handleSeven2();
     },
     methods: {
         drawCanvas() {
@@ -59,7 +72,7 @@ export default {
             //
             ctxA.fillRect(30, 30, 150, 100); // fillRect()方法将它的左上角放在(10, 10)，把它的大小设置成宽150高100。 填充的矩形
             //
-            ctxA.clearRect(45, 45, 60, 60); // 清除指定矩形区域，让清除部分完全透明
+            // ctxA.clearRect(45, 45, 60, 60); // 清除指定矩形区域，让清除部分完全透明
             console.info(ctxA, "ctxA可调用的Api");
             // document.body.appendChild(canvasA);
         },
@@ -143,8 +156,80 @@ export default {
             let ctxFive = canvasFive.getContext("2d");
 
             // 调用Path2d
-        }
-    }
+        },
+
+        handleSeven() {
+            const targetCanvas = document.getElementById("sevenCanvas");
+            const ctx = targetCanvas.getContext("2d");
+            const image = new Image();
+            image.onload = () => {
+                // drawImage(image, x, y, width, height)
+                // x,y 是起始位置 width，height 用来设置是否需要缩放
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.stroke();
+            };
+            image.src = "/gundam.png";
+        },
+
+        handleSeven1() {
+            const targetCanvas = document.getElementById("sevenCanvas1");
+            console.log("targetCanvas", targetCanvas.classList);
+            const ctx = targetCanvas.getContext("2d");
+            const image = new Image();
+            targetCanvas.onmouseenter = () => {
+                targetCanvas.classList.add("highlight");
+            };
+            targetCanvas.onmouseout = () => {
+                setTimeout(() => {
+                    targetCanvas.classList.remove("highlight");
+                }, 1000);
+            };
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.stroke();
+            };
+            image.src = "/gundam.png";
+        },
+        handleSeven2() {
+            const targetCanvas = document.getElementById("sevenCanvas2");
+            const ctx = targetCanvas.getContext("2d");
+            const image = new Image();
+            targetCanvas.onmouseenter = () => {
+                ctx.reset();
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.strokeStyle = "red";
+                ctx.stroke();
+                console.log("鼠标移入", ctx);
+            };
+            targetCanvas.onmouseout = () => {
+                ctx.reset();
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.stroke();
+                console.log("鼠标移移出", ctx);
+            };
+            // targetCanvas.onclick = () => {
+            //     console.log("鼠标点击");
+            // };
+            // targetCanvas.addEventListener("click", () => {
+            //     console.log("dsf");
+            // });
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.stroke();
+            };
+            image.src = "/gundam.png";
+        },
+    },
 };
 </script>
 
@@ -156,5 +241,12 @@ export default {
     border-top: 10px solid #000;
     border-right: 10px solid transparent;
     border-left: 10px solid transparent;
+}
+
+.sevenCanvas1 {
+    border: 2px solid black;
+}
+.highlight {
+    border-color: rgb(33, 221, 127); /* 点击后边框颜色变为红色 */
 }
 </style>

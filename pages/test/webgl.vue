@@ -1,6 +1,9 @@
 <template>
     <!-- 新建文件的模板 -->
-    <div class="example">新建Vue文件模板</div>
+    <div class="webgl">
+        <h2>测试 webgl</h2>
+        <canvas id="canvasDemo"></canvas>
+    </div>
 </template>
 
 <script>
@@ -17,12 +20,21 @@ export default {
     data() {
         return {};
     },
-    mounted() {},
-    methods: {},
+    mounted() {
+        this.initGL();
+    },
+    methods: {
+        initGL() {
+            const targetEle = document.getElementById("canvasDemo");
+            const webgl = targetEle.getContext("webgl");
+            webgl.drawArrays(webgl.POINTS, 0, 1);
+            console.log("webgl", webgl);
+        },
+    },
 };
 </script>
 
 <style lang="less">
-.example {
+.webgl {
 }
 </style>

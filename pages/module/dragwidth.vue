@@ -13,7 +13,8 @@
                 实现原理：通过 drag 方法。首先赋予拖动元素可拖动属性， 即
                 draggable = 'true', 其次在可拖动属性上添加 drag、dragover 事件
                 (html文件中为 ondrag、ondragover)，再可拖动元素的父级添加
-                dragend 事件，讲拖动距离变化表现在矩形宽度上。
+                dragend
+                事件，将拖动距离变化表现在矩形宽度上。drag会拖动元素，更改元素在文档流里的坐标，如果再通过js调整其大小或位置，元素会有晃动跳脱效果，效果不理想
             </div>
 
             <!-- 建造div标签 模拟矩形的右边框 -->
@@ -46,20 +47,20 @@
 import Mousemove from "~/components/Mousemove.vue";
 export default {
     components: {
-        Mousemove
+        Mousemove,
     },
     head() {
         return {
             title: "改变元素宽度",
             meta: "",
-            script: []
+            script: [],
         };
     },
     data() {
         return {
             leftInfo: {
-                width: 360
-            }
+                width: 360,
+            },
         };
     },
     mounted() {
@@ -89,8 +90,8 @@ export default {
         handleING(e) {
             // console.log(e, "拖动进行");
             this.leftInfo.width = e.clientX;
-        }
-    }
+        },
+    },
 };
 </script>
 

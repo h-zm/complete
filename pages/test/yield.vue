@@ -20,8 +20,8 @@ export default {
     methods: {
         *demoGener() {
             console.log(2);
-            yield 523;
-            console.log(3);
+            const back = yield 523;
+            console.log("back", back);
         },
 
         handleRes() {

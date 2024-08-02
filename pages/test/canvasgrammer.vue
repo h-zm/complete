@@ -38,6 +38,8 @@
             <canvas id="sevenCanvas1" class="sevenCanvas1"> </canvas>
             <h4>7.2 canvas reset重绘实现鼠标移入样式更改</h4>
             <canvas id="sevenCanvas2"> </canvas>
+            <h4>7.3 canvas click事件</h4>
+            <canvas id="sevenCanvas3"> </canvas>
         </div>
     </div>
 </template>
@@ -56,6 +58,7 @@ export default {
         this.handleSeven();
         this.handleSeven1();
         this.handleSeven2();
+        this.handleSeven3();
     },
     methods: {
         drawCanvas() {
@@ -221,6 +224,21 @@ export default {
             // targetCanvas.addEventListener("click", () => {
             //     console.log("dsf");
             // });
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0, 300, 150);
+                ctx.beginPath();
+                ctx.rect(0, 0, 300, 150);
+                ctx.stroke();
+            };
+            image.src = "/gundam.png";
+        },
+        handleSeven3() {
+            const targetCanvas = document.getElementById("sevenCanvas3");
+            const ctx = targetCanvas.getContext("2d");
+            const image = new Image();
+            targetCanvas.addEventListener("click", function (e) {
+                console.log("click", `(${e.x}, ${e.y})`);
+            });
             image.onload = () => {
                 ctx.drawImage(image, 0, 0, 300, 150);
                 ctx.beginPath();

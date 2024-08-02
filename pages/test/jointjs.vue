@@ -1,6 +1,6 @@
 <template>
     <!-- 新建文件的模板 -->
-    <div class="example">pdfjs</div>
+    <div class="example">新建Vue文件模板</div>
 </template>
 
 <script>
@@ -17,11 +17,7 @@ export default {
     data() {
         return {};
     },
-    mounted() {
-        new PDFViewer({
-            url: "/中国电信企业微信平台业务规范和技术规范/pdf",
-        });
-    },
+    mounted() {},
     methods: {},
 };
 </script>

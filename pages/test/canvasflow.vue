@@ -48,7 +48,7 @@ export default {
 
         drawNode(node, ctx) {
             ctx.beginPath();
-            // 绘制矩形范围
+            // 绘制矩形范围 (x, y, width, height)
             ctx.rect(node.x - 50, node.y - 30, 100, 60);
             ctx.fillStyle = "#fff";
             // 填充颜色
@@ -96,9 +96,6 @@ export default {
             const canvas = document.getElementById("myCanvas");
             const ctx = canvas.getContext("2d");
 
-            canvas.onclick = (e) => {
-                console.log("e", e);
-            };
             // clear
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -109,6 +106,24 @@ export default {
             });
             this.nodes.forEach((node) => {
                 this.drawNode(node, ctx);
+            });
+
+            // 处理点击事件
+            canvas.addEventListener("click", (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                console.log("坐标", `(${x},${y})`);
+                this.nodes.forEach((rect) => {
+                    if (
+                        x > rect.x &&
+                        x < rect.x + 50 &&
+                        y > rect.y &&
+                        y < rect.y + 30
+                    ) {
+                        console.log(`Clicked on ${rect.id}`);
+                    }
+                });
             });
         },
     },

@@ -237,7 +237,10 @@ export default {
             const ctx = targetCanvas.getContext("2d");
             const image = new Image();
             targetCanvas.addEventListener("click", function (e) {
+                const rect = targetCanvas.getBoundingClientRect();
                 console.log("click", `(${e.x}, ${e.y})`);
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
             });
             image.onload = () => {
                 ctx.drawImage(image, 0, 0, 300, 150);

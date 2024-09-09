@@ -40,7 +40,7 @@
 export default {
     head() {
         return {
-            title: "拖入目标区"
+            title: "拖入目标区",
         };
     },
     data() {
@@ -51,8 +51,8 @@ export default {
                 { name: "testC", id: 3 },
                 { name: "testD", id: 4 },
                 { name: "testE", id: 5 },
-                { name: "testE", id: 6 }
-            ]
+                { name: "testE", id: 6 },
+            ],
         };
     },
     mounted() {
@@ -108,16 +108,18 @@ export default {
             e.preventDefault();
             drogElement.classList.remove("drogover");
         },
+
         handleDrop(e) {
-            console.log("移动完毕", e);
+            // 从其他位置拖入进来的文件内容也可在这里获取
+            console.log("移动完毕", e.dataTransfer.files);
             e.preventDefault();
             // 获取目标id
             const draggedId = e.dataTransfer.getData("text/plain");
             drogElement.appendChild(document.getElementById(draggedId));
             // 添加选中样式
             drogElement.classList.add("droped");
-        }
-    }
+        },
+    },
 };
 </script>
 

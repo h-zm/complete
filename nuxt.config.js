@@ -106,6 +106,13 @@ export default {
                 "^/api": "/",
             },
         },
+        "/localServer": {
+            target: "http://172.16.75.47:7001/",
+            changeOrigin: true,
+            pathRewrite: {
+                "^/localServer": "/",
+            },
+        },
         /**
          * // pathRewrite中"^/api"对应的值是"/"或''效果是一样 不会重写写/api指向
          * "^/api": "/"  中的^是正则符表示从头开始匹配第一个出现的

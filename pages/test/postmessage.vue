@@ -1,6 +1,9 @@
 <template>
     <!-- 新建文件的模板 -->
-    <div class="example">postMessage</div>
+    <div class="example">
+        postMessage
+        <div>{{ JSON.stringify(messageData) }}</div>
+    </div>
 </template>
 
 <script>
@@ -15,12 +18,21 @@ export default {
         };
     },
     data() {
-        return {};
+        return {
+            messageData: "",
+        };
     },
     mounted() {
-        setTimeout(() => {
-            this.postInit();
-        }, 1000);
+        // 得用窗口属性监听
+        window.addEventListener("message", (data) => {
+            // console.log("接收到", data.data.refresh);
+            console.log("接收到", data);
+            this.messageData = data.data;
+            // window.location.reload();
+        });
+        // setTimeout(() => {
+        //     this.postInit();
+        // }, 1000);
     },
     methods: {
         postInit() {
